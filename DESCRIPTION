@@ -1,0 +1,14 @@
+Package: openNCAreport
+Title: Generates Publicataion Quality Report Elements
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Nick",
+           family = "Howlett",
+           role = c("aut", "cre"),
+           email = "nhowlett@mango-solutions.com")
+Description: What the package does (one paragraph).
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
