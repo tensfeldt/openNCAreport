@@ -23,15 +23,14 @@ make_summary_plan <- function(data,
             dplyr::select(-!!by)
   
   summary_plan <- summary_plan %>%
-                  # from the plan, select the data based on predicate (minus
-                  # grouping var) and store the asssoc summary fns
+                  # from the plan, select the data based on predicate and store
+                  # the asssoc summary fns
                   purrr::map(~c(data = purrr::pluck(.x, 1) %>%
                                        purrr::map(~dplyr::select(df_wrk, where(get(.x)))),
                                 fn = purrr::pluck(.x, 2))) %>%
                   # drop entries with no data
                   purrr::discard(~ncol(.x$data) == 0) %>%
-                  # TODO fix this conditional part
-                  # conditionally add grouping variables
+                  # add grouping variables
                   purrr::map(~purrr::modify_at(.x, .at = "data",
                                               ~cbind(df_grps, .x))) %>%
                   # pivot_longer all the data
@@ -39,7 +38,7 @@ make_summary_plan <- function(data,
                                                ~tidyr::pivot_longer(data = .x,
                                                                     cols = -!!by,
                                                                     names_to = "variable") %>%
-                                               dplyr::group_by(variable) %>%
+                                               dplyr::group_by(!!by, variable) %>%
                                                tidyr::nest()))
   }
                   
@@ -85,5 +84,5 @@ make_summary_plan <- function(data,
   # }
 
 
-  plan
+  summary_plan
 }
