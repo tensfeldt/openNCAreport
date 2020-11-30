@@ -1,7 +1,6 @@
 make_summary_plan <- function(data,
                               # TODO we need to have mechanism to reference variables directly
-                              summary_formula = list(numeric = is.numeric ~ sum_mean,
-                                                     factor = is.factor ~ sum_fact),
+                              summary_formula = NULL,
                               by = NULL){
   # input validation
   if(!all(purrr::map_lgl(summary_formula, check_fmla_operators))) stop("Your summary formulae contain operators other than `~` & `|`, which is currently not supported")
