@@ -1,11 +1,13 @@
 check_fmla_operators <- function(fmla) {
+  #TODO this doesnt work because .Options$operators can return false, investigate.
   # this function checks if the operators in fmla are in c("~", "+"), otherwise return FALSE
   operators <- intersect(names(.Options$operators), all.names(fmla))
   all(operators %in% c("+", "~")) 
 } 
 
 get_fmla_response <- function(fmla) {
- if(is_two_sided(fmla)) stop("Input formula is not one-sided")
+  #TODO fix this logic
+ # if(!is_two_sided(fmla)) stop("Input formula is not two-sided")
   # get all vars
   vars <- attr(terms(formula(fmla)), which = "variables")
   # get response
