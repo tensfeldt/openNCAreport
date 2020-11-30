@@ -26,7 +26,7 @@ make_summary_plan <- function(data,
                   # from the plan, select the data based on predicate and store
                   # the asssoc summary fns
                   purrr::map(~c(data = purrr::pluck(.x, 1) %>%
-                                       purrr::map(~dplyr::select(df_wrk, where(get(.x)))),
+                                       purrr::map(~dplyr::select(df_wrk, .x)),
                                 fn = purrr::pluck(.x, 2))) %>%
                   # drop entries with no data
                   purrr::discard(~ncol(.x$data) == 0) %>%
