@@ -22,6 +22,49 @@ class(ls_data) <- "openNCA_testcase"
 return(ls_data)
 }
 
+make_test_case <- function(ard, flg, mct, param) {
+
+test_case <- list("ARD" = ard,
+                  "FLG" = flg,
+                  "MCT" = mct,
+                  "PARAM" = param)
+
+test_cast <- test_case %>%
+             purrr::modify(~mutate(.x, across(where(is.character), as.factor)))
+
+class(ls_data) <- "openNCA_testcase"
+return(ls_data)
+}
+
+
+
+update_label <- function(x, label){
+  attr(x, which = "label") = label
+  x
+}
+
+update_label_df_var <- function(df, var, label) {
+    df[[var]] <- update_label(df[[var]], label)
+    df
+}
+
+update_labels_df <- function(df, ...){
+  browser()
+  df_names <-  names(df)
+  args <- list(...)
+  names_args <- names(args)
+  missing_vars <-  setdiff(names_args, df_names)
+  if(length(missing_vars) > 0) stop("Some variables are not present in the input data")
+  for(var in seq_along(args)){
+    var_i <- names_args[var]
+    if(var_i %in% df_names){
+      lab_i <- args[[var]]
+      df <- update_label_df_var(df, var_i, lab_i)
+    }
+  }
+  df
+}
+
 get_ard <- function(tc) {
   stopifnot(class(tc) == "openNCA_testcase")
   return(purrr::pluck(tc, "ARD"))
