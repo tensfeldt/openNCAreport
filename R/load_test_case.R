@@ -49,7 +49,6 @@ update_label_df_var <- function(df, var, label) {
 }
 
 update_labels_df <- function(df, ...){
-  browser()
   df_names <-  names(df)
   args <- list(...)
   names_args <- names(args)
