@@ -55,10 +55,28 @@ mean_mi_sd <- function(x, na.rm = TRUE) {
 }
 
 
+#' Upper Range
+#'
+#' @inheritParams gm_mean
+#'
+#' @return the upper range of \code{x}
+#' @export
+#'
+#' @examples
+#' \dontrun{upper_range(1:10)}
 upper_range <- function(x, na.rm = TRUE){
   range(x, na.rm = na.rm)[2]
 }
 
+#' Lower Range
+#'
+#' @inheritParams gm_mean
+#'
+#' @return the lower range of \code{x}
+#' @export
+#'
+#' @examples
+#' \dontrun{lower_range(1:10)}
 lower_range <- function(x, na.rm = TRUE){
   range(x, na.rm = na.rm)[1]
 }
