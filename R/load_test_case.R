@@ -32,11 +32,11 @@ test_case <- list("ARD" = ard,
 test_cast <- test_case %>%
              purrr::modify(~mutate(.x, across(where(is.character), as.factor)))
 
+
+
 class(ls_data) <- "openNCA_testcase"
 return(ls_data)
 }
-
-
 
 update_label <- function(x, label){
   attr(x, which = "label") = label
