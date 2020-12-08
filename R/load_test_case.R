@@ -18,6 +18,14 @@ ls_data <- purrr::map_chr(test_case,
            purrr::map(readr::read_csv, col_types = readr::cols()) %>%
            purrr::modify(~mutate(.x, across(where(is.character), as.factor)))
 
+# make a 'working data set' for modifying
+ls_data$WDS <- ls_data$PARAM
+
+# Make slots (empty) for units and labels to appended later
+ls_data$units <- NULL
+ls_data$units_class <- NULL
+ls_data$label <- NULL
+# Set class (for now this is superficial but later should utilise OOP)
 class(ls_data) <- "openNCA_testcase"
 return(ls_data)
 }
@@ -33,9 +41,10 @@ test_cast <- test_case %>%
              purrr::modify(~mutate(.x, across(where(is.character), as.factor)))
 
 
-
-class(ls_data) <- "openNCA_testcase"
-return(ls_data)
+# make a 'working data set' for modifying
+test_case$WDS <- test_case$PARAM
+class(test_case) <- "openNCA_testcase"
+return(test_case)
 }
 
 update_label <- function(x, label){

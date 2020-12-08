@@ -17,3 +17,5 @@ Imports:
     purrr,
     magrittr,
     readr
+Depends: 
+    R (>= 2.10)
