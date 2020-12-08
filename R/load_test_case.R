@@ -43,6 +43,11 @@ test_cast <- test_case %>%
 
 # make a 'working data set' for modifying
 test_case$WDS <- test_case$PARAM
+# Make slots (empty) for units and labels to appended later
+ls_data$units <- NULL
+ls_data$units_class <- NULL
+ls_data$label <- NULL
+
 class(test_case) <- "openNCA_testcase"
 return(test_case)
 }

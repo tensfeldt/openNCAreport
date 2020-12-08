@@ -2,21 +2,51 @@ append_wds_units <- function(tc){
   vars <- names(tc$WDS)
   names(vars) <- vars
   tc$units <- vars %>%
-              purrr::imap(~get_parameter_unit(.x, tc$MCT))
+              purrr::possibly(~get_parameter_unit(.x, tc$MCT))
   tc
 }
 
+append_wds_unit_classes <- function(tc){
+  vars <- names(tc$WDS)
+  names(vars) <- vars
+  tc$unit_class <- vars %>%
+              purrr::imap_chr(~get_parameter_unit_class(.x))
+  tc
+}
+
+append_wds_labels <- function(tc){
+  vars <- names(tc$WDS)
+  names(vars) <- vars
+  tc$labels <- vars %>%
+              purrr::imap(~get_parameter_label(.x))
+  tc
+}
 
 get_parameter_label <- function(x){
+
+  is_in_dep <- pred_factory(names(nca_dependency_list))
+
+
   x %>%
-    purrr::map_chr(~purrr::pluck(nca_dependency_list, .x) %>%
-                    purrr::pluck("parameter_label"))
+    purrr::map_if(.p = is_in_dep,
+                  .else = make_blank,
+                  ~purrr::pluck(nca_dependency_list, .x) %>%
+                   purrr::pluck("parameter_label")) %>%
+    purrr::map_if(.p = is.null, .f = make_blank, .else = ~.x) %>%
+    purrr::map_chr(as.character)
 }
 
 get_parameter_unit_class <- function(x){
+
+  is_in_dep <- pred_factory(names(nca_dependency_list))
+
   x %>%
-    purrr::map_chr(~purrr::pluck(nca_dependency_list, .x) %>%
-                    purrr::pluck("unit_class"))
+    purrr::map_if(.p = is_in_dep,
+                  .else = make_blank,
+                  ~purrr::pluck(nca_dependency_list, .x) %>%
+                   purrr::pluck("unit_class")) %>%
+    purrr::map_if(.p = is.null, .f = make_blank, .else = ~.x) %>%
+    purrr::map_chr(as.character)
 }
 
 get_parameter_unit <- function(x, mct) {
@@ -26,22 +56,10 @@ get_parameter_unit <- function(x, mct) {
   #grab output units valid for this test case from MCT
   mct_opu <-  stringr::str_subset(names(mct), "OUTPUTUNIT$")
 
-  # this 'function factory' will make a predicate for if a variable is in the
-  # set of outputunits
-  pred_factory <- function(output_units_mct){
-   function(x){
-     x %in% output_units_mct
-   }
-  }
   # make custom predicate
   is_opu <- pred_factory(mct_opu)
   is_in_dep <- pred_factory(names(nca_dependency_list))
 
-  # this function takes an object and returns a blank factor for use as the
-  # .else argument in map_if
-  make_blank <- function(x){
-    factor("")
-  }
 
   x %>%
     # take var(s) and pluck the "unit_class" from the nca_dependency list (if it exists)

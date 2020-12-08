@@ -1,10 +1,24 @@
+# this 'function factory' will make a predicate for if a variable is in the
+# set of outputunits
+pred_factory <- function(set){
+  function(x){
+    x %in% set
+  }
+}
+
+# this function takes an object and returns a blank factor for use as the
+# .else argument in map_if
+make_blank <- function(x){
+  factor("")
+}
+
 check_fmla_operators <- function(fmla) {
   #TODO this doesnt work because .Options$operators can return false, investigate.
   # Turns out you MUST load operator.tools for this to work =/
   # this function checks if the operators in fmla are in c("~", "+"), otherwise return FALSE
   ops <- names(.Options$operators)
   operators <- intersect(names(.Options$operators), all.names(fmla))
-  all(operators %in% c("+", "~")) 
+  all(operators %in% c("+", "~"))
 }
 
 
