@@ -12,45 +12,29 @@ get_parameter_unit_class <- function(x, plist){
 }
 
 get_parameter_unit <- function(x, plist, mct) {
+
+  # grab output units valid for this test case from MCT
+  mct_opu <-  stringr::str_subset(names(mct), "OUTPUTUNIT$")
+  # this 'function factory' will make a predicate for if a variable is in the
+  # set of outputunits
+  pred_factory <- function(output_units_mct){
+   function(x){
+     x %in% output_units_mct
+   }
+  }
+  # make custom predicate
+  is_opu <- pred_factory(mct_opu)
+
+  make_blank <- function(x){
+    factor("")
+  }
+
   x %>%
     purrr::map_chr(~purrr::pluck(plist, .x) %>%
                     purrr::pluck("unit_class")) %>%
     purrr::map_chr(~stringr::str_replace(.x, pattern = "U$", replacement = "OUTPUTUNIT")) %>%
-    purrr::map_if(~pluck(mct, .x), .p = is_mctoutputunit, .else = "")
-
-
-  # ul <- gsub("U$", "", uc, ignore.case=TRUE, perl=TRUE)
-  # ulo <- paste0(ul, "OUTPUTUNIT")
-  #
-  # if(is.element(ulo, mctoutputunits)) {
-  #   parametersmatched[[i]]$unit <- mct[[ulo]]
-  # } else {
-  #   parametersmatched[[i]]$unit <- ""
-  # }
-  #
+    purrr::map_if(~pluck(mct, .x), .p = is_opu, .else = make_blank) %>%
+    purrr::map_chr(as.character)
 
 }
 
-
-is_mctoutputunit <- function(x){
-  # TODO this needs to be built into the package
-  output_units <-
-    c(
-      "TIMEOUTPUTUNIT",
-      "AMOUNTOUTPUTUNIT",
-      "DOSEOUTPUTUNIT",
-      "VOLUMEOUTPUTUNIT",
-      "CONCOUTPUTUNIT",
-      "KELOUTPUTUNIT",
-      "CLOUTPUTUNIT",
-      "AUCOUTPUTUNIT",
-      "AUMCOUTPUTUNIT",
-      "AUCNORMOUTPUTUNIT",
-      "AUROUTPUTUNIT",
-      "CONCNORMOUTPUTUNIT",
-      "VOLUMENORMOUTPUTUNIT",
-      "CLNORMOUTPUTUNIT",
-      "RATEOUTPUTUNIT"
-    )
-  x %in% output_units
-}
