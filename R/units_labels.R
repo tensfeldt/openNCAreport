@@ -1,8 +1,52 @@
+#TODO use match.arg to validate flag
+#TODO will this need the by variable?
+compute_exclusions <- function(tc, sdeid = "SDEID", flg=c("FLGEXKEL",
+                                                           "FLGEXSDE",
+                                                           "FLGEXAUC",
+                                                           "FLGEXST"), by = NULL) {
+
+  df <- merge(x=tc$ARD, y=tc$FLG, by=tc$MCT$FLGMERGE, all.x=TRUE)
+
+  sdeid_excl <- split(purrr::pluck(df, flg), purrr::pluck(df, sdeid)) %>%
+                purrr::imap(~all(.x == 1)) %>%
+                purrr::map_lgl(~.x)
+
+  df_excl <- tc$WDS
+  df_excl$EXCL <- sdeid_excl[match(df_excl[[sdeid]], names(sdeid_excl))]
+  df_excl <- df_excl %>%
+             dplyr::select(sdeid, by, EXCL) %>%
+             unique()
+
+  # filter out exclusions
+  tc$WDS <- tc$WDS %>%
+    dplyr::filter(!sdeid %in% names(sdeid_excl)[sdeid_excl])
+  # save table of exclusion correspondence to compute N, n later
+  tc$exclusions <- df_excl
+
+  tc
+}
+
+
+
+
+
+assign_wds_labels <- function(tc){
+    tc %>%
+    append_wds_labels() %>%
+    append_wds_units() %>%
+    append_wds_unit_classes() %>%
+    build_wds_labels()
+}
+
+
+
 build_wds_labels <- function(tc) {
   labels <- purrr::map2_chr(tc$labels, tc$units,
-                       ~glue::glue("{.x} ({.y})"))
+                           ~glue::glue("{.x} ({.y})") %>%
+                            stringr::str_replace_all(pattern = "\\s\\(\\)$", ""))
   names(labels) <- names(tc$labels)
   # append the wds into labels which makes it a parameter list for do.call
+  tc$labels <- labels
   labels <- append(labels, list(df = tc$WDS))
   tc$WDS <- do.call(update_labels_df, labels)
   tc
@@ -25,7 +69,19 @@ append_wds_unit_classes <- function(tc){
   tc
 }
 
+get_wds_vars <- function(tc){
+ names(tc$WDS)
+}
+
+select_wds_vars <- function(tc, ...){
+ vars <- rlang::enquos(...)
+ tc$WDS <- dplyr::select(tc$WDS, !!!vars)
+ tc
+}
+
+
 append_wds_labels <- function(tc){
+  #TODO we need to use the regex in ncp_dep_list to make sure all labels/units are found
   vars <- names(tc$WDS)
   names(vars) <- vars
   tc$labels <- vars %>%
@@ -34,7 +90,6 @@ append_wds_labels <- function(tc){
 }
 
 get_parameter_label <- function(x){
-
   is_in_dep <- pred_factory(names(nca_dependency_list))
   # TODO this hack function takes NULL in the following map_if and returns the
   # variable as a label. There's certainly a simpler way to do this
@@ -82,7 +137,9 @@ get_parameter_unit <- function(x, mct) {
     purrr::map_if(.p = is_in_dep, .else = make_blank,
                   ~purrr::pluck(nca_dependency_list, .x) %>%
                    purrr::pluck("unit_class")) %>%
-    # Add "OUTPUTUNIT" onto var(s) ending with "U"
+    # if unit_class is NULL replace with blank
+    purrr::map_if(.p = is.null, .f = make_blank, .else = ~.x) %>%
+    # Add "OUTPUTUNIT" onto var(s) ending with "U
     purrr::map_chr(~stringr::str_replace(.x, pattern = "U$", replacement = "OUTPUTUNIT")) %>%
     # take the unit from the MCT
     purrr::map_if(~pluck(mct, .x), .p = is_opu, .else = make_blank) %>%

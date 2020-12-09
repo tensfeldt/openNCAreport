@@ -1,3 +1,8 @@
+little_n <- function(x){
+ length(x) - sum(x)
+}
+
+
 # this 'function factory' will make a predicate for if a variable is in the
 # set of outputunits
 pred_factory <- function(set){

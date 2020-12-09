@@ -25,6 +25,7 @@ ls_data$WDS <- ls_data$PARAM
 ls_data$units <- NULL
 ls_data$units_class <- NULL
 ls_data$label <- NULL
+ls_data$exclusions <- NULL
 # Set class (for now this is superficial but later should utilise OOP)
 class(ls_data) <- "openNCA_testcase"
 return(ls_data)
@@ -47,6 +48,7 @@ test_case$WDS <- test_case$PARAM
 ls_data$units <- NULL
 ls_data$units_class <- NULL
 ls_data$label <- NULL
+ls_data$exclusions <- NULL
 
 class(test_case) <- "openNCA_testcase"
 return(test_case)
