@@ -1,25 +1,29 @@
 #TODO use match.arg to validate flag
 #TODO will this need the by variable?
-compute_exclusions <- function(tc, sdeid = "SDEID", flg=c("FLGEXKEL",
-                                                           "FLGEXSDE",
-                                                           "FLGEXAUC",
-                                                           "FLGEXST"), by = NULL) {
+compute_exclusions <- function(tc,
+                               profile = "SDEID",
+                               flg=c("FLGEXKEL",
+                                     "FLGEXSDE",
+                                     "FLGEXAUC",
+                                     "FLGEXST"),
+                               by = NULL) {
 
   df <- merge(x=tc$ARD, y=tc$FLG, by=tc$MCT$FLGMERGE, all.x=TRUE)
 
-  sdeid_excl <- split(purrr::pluck(df, flg), purrr::pluck(df, sdeid)) %>%
+  profile_excl <- split(purrr::pluck(df, flg), purrr::pluck(df, profile)) %>%
                 purrr::imap(~all(.x == 1)) %>%
                 purrr::map_lgl(~.x)
 
   df_excl <- tc$WDS
-  df_excl$EXCL <- sdeid_excl[match(df_excl[[sdeid]], names(sdeid_excl))]
+  # append the value of profile_excl for each profile in the WDS
+  df_excl$EXCL <- profile_excl[match(df_excl[[profile]], names(profile_excl))]
   df_excl <- df_excl %>%
-             dplyr::select(sdeid, by, EXCL) %>%
+             dplyr::select(profile, by, EXCL) %>%
              unique()
 
   # filter out exclusions
   tc$WDS <- tc$WDS %>%
-    dplyr::filter(!sdeid %in% names(sdeid_excl)[sdeid_excl])
+    dplyr::filter(!profile %in% names(profile_excl)[profile_excl])
   # save table of exclusion correspondence to compute N, n later
   tc$exclusions <- df_excl
 
@@ -31,11 +35,42 @@ compute_exclusions <- function(tc, sdeid = "SDEID", flg=c("FLGEXKEL",
 
 
 assign_wds_labels <- function(tc){
-    tc %>%
-    append_wds_labels() %>%
-    append_wds_units() %>%
-    append_wds_unit_classes() %>%
-    build_wds_labels()
+    # tc %>%
+    # append_wds_labels() %>%
+    # append_wds_units() %>%
+    # append_wds_unit_classes() %>%
+    # build_wds_labels()
+
+    # from nca_dependency_list pluck regex for matching vars
+    re <- data.frame(re = purrr::map_chr(nca_dependency_list, pluck, "regex"),
+                   stringsAsFactors = FALSE) %>%
+    # keep labels from nca_dependency_list
+    rownames_to_column(var = "nca_label") %>%
+    # from nca_dependency_list get all parameter labels and unit_classes
+    mutate(label = map(nca_label, ~pluck(nca_dependency_list[[.x]], "parameter_label")),
+           unit_class = map(nca_label, ~pluck(nca_dependency_list[[.x]], "unit_class")),
+           unit = get_parameter_unit(nca_label, tc$MCT)) %>%
+    # find all vars in current WDS from test case
+    mutate(matched_var = map(re, ~stringr::str_subset(string = get_wds_vars(tc),
+                                                      pattern = .x))) %>%
+    # remove cases where no vars are matched
+    filter(map_lgl(matched_var, ~!vctrs::vec_is_empty(.x))) %>%
+    # unwrap the (nested) matched_var column to give one-row per var
+    unnest(matched_var) %>%
+    rowwise() %>%
+    # if the label is blank take the var name as a default
+    mutate(across(c(label), ~dplyr::if_else(is.null(.x), true = matched_var, false = .x)))
+
+    # from the above re-correspondence df build the var labels and apply them
+    labels <- purrr::map2_chr(re$label, re$unit,
+                              ~glue::glue("{.x} ({.y})") %>%
+                                stringr::str_replace_all(pattern = "\\s\\(\\)$", ""))
+    names(labels) <- re$matched_var
+    tc$labels <- labels
+    # append the wds into labels which makes it a parameter list for do.call
+    labels <- append(labels, list(df = tc$WDS))
+    tc$WDS <- do.call(update_labels_df, labels)
+    tc
 }
 
 
