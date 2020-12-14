@@ -8,14 +8,21 @@ Authors@R:
            email = "nhowlett@mango-solutions.com")
 Description: What the package does (one paragraph).
 License: MIT + file LICENSE
+URL: https://github.com/tensfeldt/openNCA_report
+Depends: 
+    R (>= 2.10)
+Imports: 
+    dplyr,
+    glue,
+    magrittr,
+    purrr,
+    readr,
+    rlang,
+    stringr,
+    tibble,
+    tidyr,
+    vctrs
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
-Imports: 
-    gt,
-    purrr,
-    magrittr,
-    readr
-Depends: 
-    R (>= 2.10)

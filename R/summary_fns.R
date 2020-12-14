@@ -32,7 +32,8 @@ gm_cv <- function(x, na.rm = TRUE) {
 #'
 #' @inheritParams gm_mean
 #'
-#' @return the arithmetic mean of \code{x} plus one standard deviation, a single numeric
+#' @return the arithmetic mean of \code{x} plus one standard deviation, a single
+#'   numeric
 #' @export
 #'
 #' @examples
@@ -45,7 +46,8 @@ mean_pl_sd <- function(x, na.rm=TRUE) {
 #'
 #' @inheritParams gm_mean
 #'
-#' @return the arithmetic mean of \code{x} minus one standard deviation, a single numeric
+#' @return the arithmetic mean of \code{x} minus one standard deviation, a
+#'   single numeric
 #' @export
 #'
 #' @examples
@@ -79,4 +81,19 @@ upper_range <- function(x, na.rm = TRUE){
 #' \dontrun{lower_range(1:10)}
 lower_range <- function(x, na.rm = TRUE){
   range(x, na.rm = na.rm)[1]
+}
+
+
+#' Compute "Little n" for the exclusion profile
+#'
+#' @param x a \code{lgl} vector with TRUE indicating an exclusion of that
+#'   experimental unit from the summaries
+#'
+#' @return the value for little n, which is the number of experimental units
+#'   considered in the summaries (i.e. the total number minuse exclusions)
+#' @export
+#'
+#' @examples
+little_n <- function(x){
+  length(x) - sum(x)
 }

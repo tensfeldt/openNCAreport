@@ -8,21 +8,22 @@ compute_exclusions <- function(tc,
                                      "FLGEXST"),
                                by = NULL) {
 
-  df <- merge(x=tc$ARD, y=tc$FLG, by=tc$MCT$FLGMERGE, all.x=TRUE)
+  df <- merge(x=tc[["ARD"]], y=tc[["FLG"]], by=tc$MCT[["FLGMERGE"]], all.x=TRUE)
 
   profile_excl <- split(purrr::pluck(df, flg), purrr::pluck(df, profile)) %>%
-                purrr::imap(~all(.x == 1)) %>%
-                purrr::map_lgl(~.x)
+                        purrr::imap(~all(.x == 1)) %>%
+                        purrr::map_lgl(~.x)
 
   df_excl <- tc$WDS
   # append the value of profile_excl for each profile in the WDS
-  df_excl$EXCL <- profile_excl[match(df_excl[[profile]], names(profile_excl))]
+  df_excl[["EXCL"]] <- profile_excl[match(df_excl[[profile]],
+                                          names(profile_excl))]
   df_excl <- df_excl %>%
-             dplyr::select(profile, by, EXCL) %>%
+             dplyr::select(profile, by, "EXCL") %>%
              unique()
 
   # filter out exclusions
-  tc$WDS <- tc$WDS %>%
+  tc[["WDS"]] <- tc[["WDS"]] %>%
     dplyr::filter(!profile %in% names(profile_excl)[profile_excl])
   # save table of exclusion correspondence to compute N, n later
   tc$exclusions <- df_excl
@@ -35,88 +36,113 @@ compute_exclusions <- function(tc,
 
 
 assign_wds_labels <- function(tc){
-    # tc %>%
-    # append_wds_labels() %>%
-    # append_wds_units() %>%
-    # append_wds_unit_classes() %>%
-    # build_wds_labels()
 
+    # data("nca_dependency_list", package = "openNCAAreport")
     # from nca_dependency_list pluck regex for matching vars
-    re <- data.frame(re = purrr::map_chr(nca_dependency_list, pluck, "regex"),
+    re <- data.frame(re = purrr::map_chr(nca_dependency_list,
+                                         purrr::pluck, "regex"),
                    stringsAsFactors = FALSE) %>%
     # keep labels from nca_dependency_list
-    rownames_to_column(var = "nca_label") %>%
+    tibble::rownames_to_column(var = "nca_label") %>%
     # from nca_dependency_list get all parameter labels and unit_classes
-    mutate(label = map(nca_label, ~pluck(nca_dependency_list[[.x]], "parameter_label")),
-           unit_class = map(nca_label, ~pluck(nca_dependency_list[[.x]], "unit_class")),
-           unit = get_parameter_unit(nca_label, tc$MCT)) %>%
+    dplyr::mutate(label = purrr::map("nca_label",
+                                     ~purrr::pluck(nca_dependency_list[[.x]],
+                                                   "parameter_label")),
+           unit_class = purrr::map("nca_label",
+                                   ~purrr::pluck(nca_dependency_list[[.x]],
+                                                 "unit_class")),
+           unit = get_parameter_unit("nca_label", tc$MCT)) %>%
     # find all vars in current WDS from test case
-    mutate(matched_var = map(re, ~stringr::str_subset(string = get_wds_vars(tc),
-                                                      pattern = .x))) %>%
+    dplyr::mutate(matched_var = purrr::map(re,
+                                ~stringr::str_subset(string = get_wds_vars(tc),
+                                                     pattern = .x))) %>%
     # remove cases where no vars are matched
-    filter(map_lgl(matched_var, ~!vctrs::vec_is_empty(.x))) %>%
+    dplyr::filter(purrr::map_lgl("matched_var", ~!vctrs::vec_is_empty(.x))) %>%
     # unwrap the (nested) matched_var column to give one-row per var
-    unnest(matched_var) %>%
-    rowwise() %>%
+    tidyr::unnest("matched_var") %>%
+    dplyr::rowwise() %>%
     # if the label is blank take the var name as a default
-    mutate(across(c(label), ~dplyr::if_else(is.null(.x), true = matched_var, false = .x)))
+    dplyr::mutate(dplyr::across(c("label"), ~dplyr::if_else(is.null(.x),
+                                                            true = matched_var,
+                                                            false = .x)))
 
     # from the above re-correspondence df build the var labels and apply them
-    labels <- purrr::map2_chr(re$label, re$unit,
+    labels <- purrr::map2_chr(re[["label"]], re[["unit"]],
                               ~glue::glue("{.x} ({.y})") %>%
-                                stringr::str_replace_all(pattern = "\\s\\(\\)$", ""))
+                                stringr::str_replace_all(pattern =
+                                                           "\\s\\(\\)$", ""))
     names(labels) <- re$matched_var
     tc$labels <- labels
     # append the wds into labels which makes it a parameter list for do.call
-    labels <- append(labels, list(df = tc$WDS))
-    tc$WDS <- do.call(update_labels_df, labels)
+    labels <- append(labels, list(df = tc[["WDS"]]))
+    tc$WDS <- do.call(update_label_df, labels)
     tc
 }
 
 
 
 build_wds_labels <- function(tc) {
-  labels <- purrr::map2_chr(tc$labels, tc$units,
+  labels <- purrr::map2_chr(tc[["label"]], tc[["units"]],
                            ~glue::glue("{.x} ({.y})") %>%
-                            stringr::str_replace_all(pattern = "\\s\\(\\)$", ""))
-  names(labels) <- names(tc$labels)
+                            stringr::str_replace_all(pattern =
+                                                       "\\s\\(\\)$", ""))
+  names(labels) <- names(tc[["label"]])
   # append the wds into labels which makes it a parameter list for do.call
   tc$labels <- labels
-  labels <- append(labels, list(df = tc$WDS))
-  tc$WDS <- do.call(update_labels_df, labels)
+  labels <- append(labels, list(df = tc[["WDS"]]))
+  tc[["WDS"]] <- do.call(update_label_df, labels)
   tc
 }
 
 
+#' Append Units to the Test Case's Working Data Set
+#'
+#' @param tc a \code{openNCA_testcase} object
+#'
+#' @return Returns the \code{openNCA_testcase} object \code{tc} with the
+#'   appropriate units, which can be found in the MCT, attached to the
+#'   \code{units} slot
+#' @export
+#'
+#' @examples
 append_wds_units <- function(tc){
-  vars <- names(tc$WDS)
+  vars <- names(tc[["WDS"]])
   names(vars) <- vars
-  tc$units <- vars %>%
-              purrr::imap_chr(~get_parameter_unit(.x, tc$MCT))
+  tc[["unit"]] <- vars %>%
+              purrr::imap_chr(~get_parameter_unit(.x, tc[["MCT"]]))
   tc
 }
 
+#' Append Unit-Classes to the Test Case's Working Data Set
+#'
+#' @param tc a \code{openNCA_testcase} object
+#'
+#' @return Returns the \code{openNCA_testcase} object \code{tc} with the
+#'   appropriate units, which can be found in the MCT, attached to the
+#'   \code{unit_class} slot
+#' @export
+#'
+#' @examples
 append_wds_unit_classes <- function(tc){
-  vars <- names(tc$WDS)
+  vars <- names(tc[["WDS"]])
   names(vars) <- vars
-  tc$unit_class <- vars %>%
+  tc[["unit_class"]] <- vars %>%
               purrr::imap_chr(~get_parameter_unit_class(.x))
   tc
 }
 
 get_wds_vars <- function(tc){
- names(tc$WDS)
+ names(tc[["WDS"]])
 }
 
 select_wds_vars <- function(tc, ...){
  vars <- rlang::enquos(...)
- tc$WDS <- dplyr::select(tc$WDS, !!!vars)
+ tc[["WDS"]] <- dplyr::select(tc[["WDS"]], !!!vars)
  tc
 }
 
 
 append_wds_labels <- function(tc){
-  #TODO we need to use the regex in ncp_dep_list to make sure all labels/units are found
   vars <- names(tc$WDS)
   names(vars) <- vars
   tc$labels <- vars %>%
@@ -125,13 +151,13 @@ append_wds_labels <- function(tc){
 }
 
 get_parameter_label <- function(x){
+  # data("nca_dependency_list", package = "openNCAAreport")
   is_in_dep <- pred_factory(names(nca_dependency_list))
   # TODO this hack function takes NULL in the following map_if and returns the
   # variable as a label. There's certainly a simpler way to do this
   var <- function(y){
     factor(x)
   }
-
 
   x %>%
     purrr::map_if(.p = is_in_dep,
@@ -168,16 +194,19 @@ get_parameter_unit <- function(x, mct) {
 
 
   x %>%
-    # take var(s) and pluck the "unit_class" from the nca_dependency list (if it exists)
+    # take var(s) and pluck the "unit_class" from the nca_dependency list (if it
+    # exists)
     purrr::map_if(.p = is_in_dep, .else = make_blank,
                   ~purrr::pluck(nca_dependency_list, .x) %>%
                    purrr::pluck("unit_class")) %>%
     # if unit_class is NULL replace with blank
     purrr::map_if(.p = is.null, .f = make_blank, .else = ~.x) %>%
     # Add "OUTPUTUNIT" onto var(s) ending with "U
-    purrr::map_chr(~stringr::str_replace(.x, pattern = "U$", replacement = "OUTPUTUNIT")) %>%
+    purrr::map_chr(~stringr::str_replace(.x,
+                                         pattern = "U$",
+                                         replacement = "OUTPUTUNIT")) %>%
     # take the unit from the MCT
-    purrr::map_if(~pluck(mct, .x), .p = is_opu, .else = make_blank) %>%
+    purrr::map_if(~purrr::pluck(mct, .x), .p = is_opu, .else = make_blank) %>%
     # cast as character
     purrr::map_chr(as.character)
 

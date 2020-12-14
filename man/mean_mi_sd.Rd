@@ -13,7 +13,8 @@ mean_mi_sd(x, na.rm = TRUE)
     values should be stripped before the computation proceeds.}
 }
 \value{
-the arithmetic mean of \code{x} minus one standard deviation, a single numeric
+the arithmetic mean of \code{x} minus one standard deviation, a
+single numeric
 }
 \description{
 Mean Minus One Standard Deviation
