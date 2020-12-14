@@ -32,9 +32,6 @@ compute_exclusions <- function(tc,
 }
 
 
-
-
-
 assign_wds_labels <- function(tc){
 
     # data("nca_dependency_list", package = "openNCAAreport")
@@ -45,19 +42,19 @@ assign_wds_labels <- function(tc){
     # keep labels from nca_dependency_list
     tibble::rownames_to_column(var = "nca_label") %>%
     # from nca_dependency_list get all parameter labels and unit_classes
-    dplyr::mutate(label = purrr::map("nca_label",
+    dplyr::mutate(label = purrr::map(nca_label,
                                      ~purrr::pluck(nca_dependency_list[[.x]],
                                                    "parameter_label")),
-           unit_class = purrr::map("nca_label",
+           unit_class = purrr::map(nca_label,
                                    ~purrr::pluck(nca_dependency_list[[.x]],
                                                  "unit_class")),
-           unit = get_parameter_unit("nca_label", tc$MCT)) %>%
+           unit = get_parameter_unit(nca_label, tc$MCT)) %>%
     # find all vars in current WDS from test case
     dplyr::mutate(matched_var = purrr::map(re,
                                 ~stringr::str_subset(string = get_wds_vars(tc),
                                                      pattern = .x))) %>%
     # remove cases where no vars are matched
-    dplyr::filter(purrr::map_lgl("matched_var", ~!vctrs::vec_is_empty(.x))) %>%
+    dplyr::filter(purrr::map_lgl(matched_var, ~!vctrs::vec_is_empty(.x))) %>%
     # unwrap the (nested) matched_var column to give one-row per var
     tidyr::unnest("matched_var") %>%
     dplyr::rowwise() %>%
@@ -80,57 +77,6 @@ assign_wds_labels <- function(tc){
 }
 
 
-
-build_wds_labels <- function(tc) {
-  labels <- purrr::map2_chr(tc[["label"]], tc[["units"]],
-                           ~glue::glue("{.x} ({.y})") %>%
-                            stringr::str_replace_all(pattern =
-                                                       "\\s\\(\\)$", ""))
-  names(labels) <- names(tc[["label"]])
-  # append the wds into labels which makes it a parameter list for do.call
-  tc$labels <- labels
-  labels <- append(labels, list(df = tc[["WDS"]]))
-  tc[["WDS"]] <- do.call(update_label_df, labels)
-  tc
-}
-
-
-#' Append Units to the Test Case's Working Data Set
-#'
-#' @param tc a \code{openNCA_testcase} object
-#'
-#' @return Returns the \code{openNCA_testcase} object \code{tc} with the
-#'   appropriate units, which can be found in the MCT, attached to the
-#'   \code{units} slot
-#' @export
-#'
-#' @examples
-append_wds_units <- function(tc){
-  vars <- names(tc[["WDS"]])
-  names(vars) <- vars
-  tc[["unit"]] <- vars %>%
-              purrr::imap_chr(~get_parameter_unit(.x, tc[["MCT"]]))
-  tc
-}
-
-#' Append Unit-Classes to the Test Case's Working Data Set
-#'
-#' @param tc a \code{openNCA_testcase} object
-#'
-#' @return Returns the \code{openNCA_testcase} object \code{tc} with the
-#'   appropriate units, which can be found in the MCT, attached to the
-#'   \code{unit_class} slot
-#' @export
-#'
-#' @examples
-append_wds_unit_classes <- function(tc){
-  vars <- names(tc[["WDS"]])
-  names(vars) <- vars
-  tc[["unit_class"]] <- vars %>%
-              purrr::imap_chr(~get_parameter_unit_class(.x))
-  tc
-}
-
 get_wds_vars <- function(tc){
  names(tc[["WDS"]])
 }
@@ -139,15 +85,6 @@ select_wds_vars <- function(tc, ...){
  vars <- rlang::enquos(...)
  tc[["WDS"]] <- dplyr::select(tc[["WDS"]], !!!vars)
  tc
-}
-
-
-append_wds_labels <- function(tc){
-  vars <- names(tc$WDS)
-  names(vars) <- vars
-  tc$labels <- vars %>%
-              purrr::imap_chr(~get_parameter_label(.x))
-  tc
 }
 
 get_parameter_label <- function(x){

@@ -29,7 +29,7 @@ ls_data <- purrr::map_chr(test_case,
                           ~stringr::str_subset(string = files,
                                                pattern = .x)) %>%
            purrr::map(readr::read_csv, col_types = readr::cols()) %>%
-           purrr::modify(~mutate(.x, across(where(is.character), as.factor)))
+           purrr::modify(~dplyr::mutate(.x, dplyr::across(where(is.character), as.factor)))
 
 tc <- make_test_case(ard = ls_data[["ARD"]],
                      flg = ls_data[["FLG"]],
@@ -48,7 +48,7 @@ test_case <- list("ARD" = ard,
                   "PARAM" = param)
 
 test_cast <- test_case %>%
-             purrr::modify(~mutate(.x, across(where(is.character), as.factor)))
+             purrr::modify(~dplyr::mutate(.x, dplyr::across(where(is.character), as.factor)))
 
 
 # make a 'working data set' for modifying
