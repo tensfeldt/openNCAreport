@@ -4,7 +4,13 @@
 \alias{load_test_case}
 \title{Load NCA Test Case from Path}
 \usage{
-load_test_case(path)
+load_test_case(
+  path = NULL,
+  ard_path = NULL,
+  flg_path = NULL,
+  mct_path = NULL,
+  param_path = NULL
+)
 }
 \arguments{
 \item{path}{directory containing the ARD, FLG, MCT, and PARAM datasets in csv

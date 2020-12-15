@@ -15,8 +15,8 @@ The input, \code{tc}, with labeled assigned to the Working Data Set
 }
 \description{
 This function uses the information provided in the MCT of the input test case
-to first match variables in the working data set to set conventions using
-RegEx, these variables are then assigned appropriate labels and units, which
-are stored in each variable's "label" attribute - this label will be picked
+to first match parameters in the working data set to set conventions using
+RegEx, these parameters are then assigned appropriate labels and units, which
+are stored in each parameter's "label" attribute - this label will be picked
 up by {gtsummary} further down the pipeline
 }

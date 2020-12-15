@@ -1,3 +1,18 @@
+#' Remove Profiles Flagged for Exclusion from the Working Data Set
+#'
+#' @param tc \code{openNCA_testcase} object, the input test case
+#' @param flg \code{chr}, the parameter name in the WDS which corresponds to the
+#'   exclusion flag
+#' @param profile \code{chr}, the parameter name in the WDS which corresponds to
+#'   an identifier of one experimental unit of analysis
+#' @param by \code{chr}, the parameter name in the WDS which corresponds to
+#'   summary grouping parameter
+#'
+#' @return tc \code{openNCA_testcase} object, the input test case with the
+#'   modified WDS post exclusion
+#' @export
+#'
+#' @examples
 filter_wds_exclusions <- function(tc, flg, profile, by) {
   exclusions <- tc[["WDS"]][[flg]][match(tc[["WDS"]][[profile]],
                                    names(tc[["WDS"]][[flg]]))]
@@ -47,9 +62,9 @@ compute_exclusions <- function(tc,
 #' Assign Working Data Set Labels
 #'
 #' This function uses the information provided in the MCT of the input test case
-#' to first match variables in the working data set to set conventions using
-#' RegEx, these variables are then assigned appropriate labels and units, which
-#' are stored in each variable's "label" attribute - this label will be picked
+#' to first match parameters in the working data set to set conventions using
+#' RegEx, these parameters are then assigned appropriate labels and units, which
+#' are stored in each parameter's "label" attribute - this label will be picked
 #' up by {gtsummary} further down the pipeline
 #'
 #' @param tc \code{openNCA_testcase} object, the input test case
@@ -108,21 +123,50 @@ assign_wds_labels <- function(tc){
 }
 
 
+#' Get Working Data Set Parameter Names
+#'
+#' @inheritParams filter_wds_exclusions
+#'
+#' @return the current set (names) of parameters in the WDS
+#' @export
+#'
+#' @examples
 get_wds_vars <- function(tc){
  names(tc[["WDS"]])
 }
 
+#' Select Working Data Set Parameters
+#' 
+#' From the working data set, take these parameters for display in summary tables
+#'
+#' @inheritParams filter_wds_exclusions
+#' @param ... parameter names (as symbols ala {dplyr}) to keep in the working
+#'   data set, any parameters not included are removed.
+#'
+#' @return \code{tc} \code{openNCA_testcase} object, the input test case with the
+#'   modified WDS post parameter selection.
+#' @export
+#'
+#' @examples
 select_wds_vars <- function(tc, ...){
  vars <- rlang::enquos(...)
  tc[["WDS"]] <- dplyr::select(tc[["WDS"]], !!!vars)
  tc
 }
 
+#' Get Label for Parameter from NCA Dependency List
+#'
+#' @param x \code{chr}, the parameter name
+#'
+#' @return \code{chr} the parameter label
+#' @export
+#'
+#' @examples
 get_parameter_label <- function(x){
   # data("nca_dependency_list", package = "openNCAAreport")
   is_in_dep <- pred_factory(names(nca_dependency_list))
   # TODO this hack function takes NULL in the following map_if and returns the
-  # variable as a label. There's certainly a simpler way to do this
+  # parameter as a label. There's certainly a simpler way to do this
   var <- function(y){
     factor(x)
   }
@@ -136,6 +180,14 @@ get_parameter_label <- function(x){
     purrr::map_chr(as.character)
 }
 
+#' Get Unit Class for Parameter from NCA Dependency List
+#'
+#' @param x \code{chr}, the parameter name
+#'
+#' @return \code{chr} the parameter label
+#' @export
+#'
+#' @examples
 get_parameter_unit_class <- function(x){
 
   is_in_dep <- pred_factory(names(nca_dependency_list))
@@ -149,6 +201,15 @@ get_parameter_unit_class <- function(x){
     purrr::map_chr(as.character)
 }
 
+#' Get Unit for Parameter from NCA Dependency List
+#'
+#' @param x \code{chr}, the parameter name
+#' @param mct \code{data.frame}, the MCT data set from the test case
+#'
+#' @return \code{chr} the parameter label
+#' @export
+#'
+#' @examples
 get_parameter_unit <- function(x, mct) {
   # TODO currently the logic around pasting/substituting "OUTPUTUNIT$" is
   # convoluted and could be simplified

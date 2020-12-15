@@ -58,6 +58,23 @@ tc <- make_test_case(ard = ls_data[["ARD"]],
 return(tc)
 }
 
+#' Create an openNCA Test Case Object
+#'
+#' This function creates an object of class \code{openNCA_testcase} which
+#' represents a unit of analysis. At a minimum this object contains four data
+#' sets; The Analysis Ready Data set (ARD), the Model Configuration Template
+#' data set (MCT), the Flags data set (FLG), and the parameters data set
+#' (PARAM). These are all stored as \code{data.frame} objects.
+#'
+#' @param ard \code{data.frame}
+#' @param flg \code{data.frame}
+#' @param mct \code{data.frame}
+#' @param param \code{data.frame}
+#'
+#' @return a \code{openNCA_testcase} object
+#' @export
+#'
+#' @examples
 make_test_case <- function(ard, flg, mct, param) {
 # TODO make a more general s4/r6 constructor
 
@@ -91,7 +108,7 @@ update_label <- function(x, label){
 #' Update the Label of a Variable in a \code{data.frame}
 #'
 #' @param df a \code{data.frame}
-#' @param var \code{chr}, the name of the variabl to add a label to
+#' @param var \code{chr}, the name of the variable to add a label to
 #' @param label \code{chr}, the new label to give to \code{var}
 #'
 #' @return the input \code{data.frame} \code{df} with the variable \code{var}
