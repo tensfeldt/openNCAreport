@@ -9,7 +9,7 @@ update_label_df_var(df, var, label)
 \arguments{
 \item{df}{a \code{data.frame}}
 
-\item{var}{\code{chr}, the name of the variabl to add a label to}
+\item{var}{\code{chr}, the name of the variable to add a label to}
 
 \item{label}{\code{chr}, the new label to give to \code{var}}
 }

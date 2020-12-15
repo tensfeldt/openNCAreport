@@ -13,12 +13,23 @@ load_test_case(
 )
 }
 \arguments{
-\item{path}{directory containing the ARD, FLG, MCT, and PARAM datasets in csv
+\item{path}{directory containing the ARD, FLG, MCT, and PARAM data sets in csv
 format}
+
+\item{ard_path}{path to the ARD in csv format}
+
+\item{flg_path}{path to the FLG in csv format}
+
+\item{mct_path}{path to the MCT in csv format}
+
+\item{param_path}{path to the PARAM in csv format}
 }
 \value{
 a \code{openNCA_testcase} object
 }
 \description{
-Load NCA Test Case from Path
+The function works in one of two ways, either the user specifies a path to a
+directory containing a collection of four csv data sets with the patterns
+"ARD", "MCT", "FLG, and "PARAM" in the file names. Or the user has the
+options to include paths to each file.
 }

@@ -2,8 +2,17 @@
 
 #' Load NCA Test Case from Path
 #'
-#' @param path directory containing the ARD, FLG, MCT, and PARAM datasets in csv
+#' The function works in one of two ways, either the user specifies a path to a
+#' directory containing a collection of four csv data sets with the patterns
+#' "ARD", "MCT", "FLG, and "PARAM" in the file names. Or the user has the
+#' options to include paths to each file.
+#'
+#' @param path directory containing the ARD, FLG, MCT, and PARAM data sets in csv
 #'   format
+#' @param ard_path path to the ARD in csv format
+#' @param flg_path path to the FLG in csv format
+#' @param mct_path path to the MCT in csv format
+#' @param param_path path to the PARAM in csv format
 #'
 #' @return a \code{openNCA_testcase} object
 #' @details
