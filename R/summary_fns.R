@@ -95,5 +95,5 @@ lower_range <- function(x, na.rm = TRUE){
 #'
 #' @examples
 little_n <- function(x){
-  length(x) - sum(x)
+  sum(x)
 }

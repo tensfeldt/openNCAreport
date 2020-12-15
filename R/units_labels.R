@@ -1,11 +1,23 @@
-#TODO use match.arg to validate flag
+filter_wds_exclusions <- function(tc, flg, profile, by) {
+  exclusions <- tc[["WDS"]][[flg]][match(tc[["WDS"]][[profile]],
+                                   names(tc[["WDS"]][[flg]]))]
+  df_excl <- data.frame(EXCL = exclusions,
+                        profile = tc[["WDS"]][[profile]],
+                        by = tc[["WDS"]][[by]])
+
+  tc$exclusions <- df_excl
+  # filter out exclusions
+  tc[["WDS"]] <- tc[["WDS"]][exclusions, ]
+  tc
+}
+
+
+
+#TODO use match.arg to validate flag OR rethink the flag input logic
 #TODO will this need the by variable?
 compute_exclusions <- function(tc,
                                profile = "SDEID",
-                               flg=c("FLGEXKEL",
-                                     "FLGEXSDE",
-                                     "FLGEXAUC",
-                                     "FLGEXST"),
+                               flg=NULL,
                                by = NULL) {
 
   df <- merge(x=tc[["ARD"]], y=tc[["FLG"]], by=tc$MCT[["FLGMERGE"]], all.x=TRUE)
@@ -32,6 +44,23 @@ compute_exclusions <- function(tc,
 }
 
 
+#' Assign Working Data Set Labels
+#'
+#' This function uses the information provided in the MCT of the input test case
+#' to first match variables in the working data set to set conventions using
+#' RegEx, these variables are then assigned appropriate labels and units, which
+#' are stored in each variable's "label" attribute - this label will be picked
+#' up by {gtsummary} further down the pipeline
+#'
+#' @param tc \code{openNCA_testcase} object, the input test case
+#'
+#' @return The input, \code{tc}, with labeled assigned to the Working Data Set
+#'   (\code{WDS} slot)
+#' @export
+#'
+#' @importFrom rlang .data
+#'
+#' @examples
 assign_wds_labels <- function(tc){
 
     # data("nca_dependency_list", package = "openNCAAreport")
@@ -42,26 +71,28 @@ assign_wds_labels <- function(tc){
     # keep labels from nca_dependency_list
     tibble::rownames_to_column(var = "nca_label") %>%
     # from nca_dependency_list get all parameter labels and unit_classes
-    dplyr::mutate(label = purrr::map(nca_label,
+    dplyr::mutate(label = purrr::map(.data$nca_label,
                                      ~purrr::pluck(nca_dependency_list[[.x]],
                                                    "parameter_label")),
-           unit_class = purrr::map(nca_label,
+           unit_class = purrr::map(.data$nca_label,
                                    ~purrr::pluck(nca_dependency_list[[.x]],
                                                  "unit_class")),
-           unit = get_parameter_unit(nca_label, tc$MCT)) %>%
+           unit = get_parameter_unit(.data$nca_label, tc$MCT)) %>%
     # find all vars in current WDS from test case
     dplyr::mutate(matched_var = purrr::map(re,
                                 ~stringr::str_subset(string = get_wds_vars(tc),
                                                      pattern = .x))) %>%
     # remove cases where no vars are matched
-    dplyr::filter(purrr::map_lgl(matched_var, ~!vctrs::vec_is_empty(.x))) %>%
+    dplyr::filter(purrr::map_lgl(.data$matched_var,
+                                 ~!vctrs::vec_is_empty(.x))) %>%
     # unwrap the (nested) matched_var column to give one-row per var
     tidyr::unnest("matched_var") %>%
     dplyr::rowwise() %>%
     # if the label is blank take the var name as a default
-    dplyr::mutate(dplyr::across(c("label"), ~dplyr::if_else(is.null(.x),
-                                                            true = matched_var,
-                                                            false = .x)))
+    dplyr::mutate(dplyr::across(c("label"),
+                                ~dplyr::if_else(is.null(.x),
+                                                true = .data$matched_var,
+                                                false = .x)))
 
     # from the above re-correspondence df build the var labels and apply them
     labels <- purrr::map2_chr(re[["label"]], re[["unit"]],

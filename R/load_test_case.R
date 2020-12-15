@@ -10,7 +10,19 @@
 #' @export
 #'
 #' @examples
-load_test_case <- function(path) {
+load_test_case <- function(path = NULL,
+                           ard_path = NULL,
+                           flg_path = NULL,
+                           mct_path = NULL,
+                           param_path = NULL
+                           ) {
+if(is.null(path) & all(c(is.null(ard_path),is.null(flg_path),
+                         is.null(mct_path),is.null(param_path)))){
+ stop("You must supply either a single path, or individual paths to each file")
+}
+
+if(!is.null(path)){
+
 files <- list.files(path, pattern = "(ARD|FLG|MCT|PARAM)", full.names = TRUE)
 
 test_case <- c("ARD" = "ARD",
@@ -29,12 +41,19 @@ ls_data <- purrr::map_chr(test_case,
                           ~stringr::str_subset(string = files,
                                                pattern = .x)) %>%
            purrr::map(readr::read_csv, col_types = readr::cols()) %>%
-           purrr::modify(~dplyr::mutate(.x, dplyr::across(where(is.character), as.factor)))
+           purrr::modify(~dplyr::mutate(.x, dplyr::across(where(is.character),
+                                                          as.factor)))
 
 tc <- make_test_case(ard = ls_data[["ARD"]],
                      flg = ls_data[["FLG"]],
                      mct = ls_data[["MCT"]],
                      param = ls_data[["PARAM"]])
+} else {
+  tc <- make_test_case(ard = readr::read_csv(ard_path),
+                       flg = readr::read_csv(flg_path),
+                       mct = readr::read_csv(mct_path),
+                       param = readr::read_csv(param_path))
+}
 
 return(tc)
 }
@@ -48,7 +67,8 @@ test_case <- list("ARD" = ard,
                   "PARAM" = param)
 
 test_cast <- test_case %>%
-             purrr::modify(~dplyr::mutate(.x, dplyr::across(where(is.character), as.factor)))
+             purrr::modify(~dplyr::mutate(.x, dplyr::across(where(is.character),
+                                                            as.factor)))
 
 
 # make a 'working data set' for modifying
