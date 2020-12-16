@@ -1,7 +1,7 @@
 #' Predicate Function Factory
 #'
-#' This 'function factory' will make a predicate for if a variable is in the set
-#' of outputunits
+#' This 'function factory' will make a predicate for if a string is in the set
+#' of input strings
 #'
 #' @param set a \code{chr} vector representing the set of allowed values
 #'

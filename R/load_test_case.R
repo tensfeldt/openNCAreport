@@ -7,8 +7,8 @@
 #' "ARD", "MCT", "FLG, and "PARAM" in the file names. Or the user has the
 #' options to include paths to each file.
 #'
-#' @param path directory containing the ARD, FLG, MCT, and PARAM data sets in csv
-#'   format
+#' @param path directory containing the ARD, FLG, MCT, and PARAM data sets in
+#'   csv format
 #' @param ard_path path to the ARD in csv format
 #' @param flg_path path to the FLG in csv format
 #' @param mct_path path to the MCT in csv format

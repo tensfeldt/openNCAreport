@@ -14,8 +14,8 @@ This function will return a function that can be used as a predicate
 in purrr::map_if
 }
 \description{
-This 'function factory' will make a predicate for if a variable is in the set
-of outputunits
+This 'function factory' will make a predicate for if a string is in the set
+of input strings
 }
 \examples{
 \dontrun{letters_pred <- pred_factory(letters)}

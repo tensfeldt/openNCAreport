@@ -17,8 +17,9 @@ filter_wds_exclusions <- function(tc, flg, profile, by) {
   exclusions <- tc[["WDS"]][[flg]][match(tc[["WDS"]][[profile]],
                                    names(tc[["WDS"]][[flg]]))]
   df_excl <- data.frame(EXCL = exclusions,
-                        profile = tc[["WDS"]][[profile]],
                         by = tc[["WDS"]][[by]])
+
+  df_excl[[profile]] <- tc[["WDS"]][[profile]]
 
   tc$exclusions <- df_excl
   # filter out exclusions
@@ -136,15 +137,16 @@ get_wds_vars <- function(tc){
 }
 
 #' Select Working Data Set Parameters
-#' 
-#' From the working data set, take these parameters for display in summary tables
+#'
+#' From the working data set, take these parameters for display in summary
+#' tables
 #'
 #' @inheritParams filter_wds_exclusions
 #' @param ... parameter names (as symbols ala {dplyr}) to keep in the working
 #'   data set, any parameters not included are removed.
 #'
-#' @return \code{tc} \code{openNCA_testcase} object, the input test case with the
-#'   modified WDS post parameter selection.
+#' @return \code{tc} \code{openNCA_testcase} object, the input test case with
+#'   the modified WDS post parameter selection.
 #' @export
 #'
 #' @examples
