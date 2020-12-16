@@ -23,7 +23,7 @@ The openNCA desktop application has been developed as an electron application. *
 
 The {openNCAreport} package is designed to automate common reporting tasks across the NCA framework. As it stands, the package currently handles some of the data pre-processing required to present PK parameter data in a summary table. The tables themselves are generating using the feature-rich {gtsummary} package, but {openNCAreport} makes the task of loading and labeling the data very easy and can also handle studies which have a simple binary exclusion profile.
 
-For information and examples of {gtsummary} usage see the (homepage)[http://www.danieldsjoberg.com/gtsummary/].
+For information and examples of {gtsummary} usage see the [homepage](http://www.danieldsjoberg.com/gtsummary/).
 
 ### Installation and Usage
 
