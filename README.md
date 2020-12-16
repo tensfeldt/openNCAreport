@@ -36,7 +36,7 @@ After loading the package via the usual call to `library()`.
 
 At this stage in development, the work-flow in {openNCAreport} is quite rigid, with plans to add flexibility in the future. Here we outline the standard work-flow.
 
-To start you can load a NCA test-case into the R session with the `load_test_case()` function. A test-case in this context corresponds to 4 key data sets:
+To start you load a NCA test-case into the R session with the `load_test_case()` function. A test-case in this context corresponds to 4 key data sets:
 
 - the Analysis Ready Data set (**ARD**)
 - the Model Configuration Template (**MCT**)
@@ -44,4 +44,10 @@ To start you can load a NCA test-case into the R session with the `load_test_cas
 - the PK Parameters data set (**PARAM**)
 
 
-The `load_test_case()` function can either take paths to individual CSV files corresponding to each data set (in the parameters `ard_path`, `mct_path`, `flg_path`, `param_path`. Alternatively, if the analyst has prepared a directory containing each of the above CSVs the `path` argument can be specified instead and the function will automatically detect which file correspods to which data set (going of the flags `"ARD"`, `"MCT"`, `"FLG"`, and `"PARAM"` in the file names).
+The `load_test_case()` function can either take paths to individual CSV files corresponding to each data set (in the parameters `ard_path`, `mct_path`, `flg_path`, `param_path`. Alternatively, if the analyst has prepared a directory containing each of the above CSVs the `path` argument can be specified instead and the function will automatically detect which file corresponds to which data set (going of the flags `"ARD"`, `"MCT"`, `"FLG"`, and `"PARAM"` in the file names).
+
+In {openNCAreport} a test-case is stored in it's own object of class `openNCA_testcase`, and the functions within {openNCAreport} have been designed to take an `openNCA_testcase` object as an input and return one back as an output; this facilitates {magrittr}-style pipe work-flows.
+
+Should the analyst wish to access any of the data sets from a test-case they can use the accessor functions `get_xxx()` where `xxx` is `ard`, `mct`, etc.
+
+The next step in processing the input data into a publishable output is generate labels for each parameter. This process is deterministic given the test-case and an data structure internal to this package which stores (amongst other things) a correspondence table of variable names (in the input data) a parameter label, and a unit class. From the unit class a unit for the parameter can then be found in the MCT data set. With these two bits of information (label & unit) a parameter label can be produced such as: "`label` (`unit`)", e.g. "AUC (ng.hr/mL)".
