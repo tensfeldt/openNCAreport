@@ -13,8 +13,8 @@ load_test_case(
 )
 }
 \arguments{
-\item{path}{directory containing the ARD, FLG, MCT, and PARAM data sets in csv
-format}
+\item{path}{directory containing the ARD, FLG, MCT, and PARAM data sets in
+csv format}
 
 \item{ard_path}{path to the ARD in csv format}
 

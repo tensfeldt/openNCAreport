@@ -90,7 +90,7 @@ get_wds_vars <- function(tc){
 #' @export
 #'
 #' @examples
-select_wds_vars <- function(tc, ...){
+select_wds_pars <- function(tc, ...){
  vars <- rlang::enquos(...)
  tc[["WDS"]] <- dplyr::select(tc[["WDS"]], !!!vars)
  tc

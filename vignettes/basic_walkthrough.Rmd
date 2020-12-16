@@ -1,0 +1,96 @@
+---
+title: "basic_walkthrough"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{basic_walkthrough}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Load package
+
+```{r setup}
+library(openNCAreport)
+```
+
+## Set input parameters
+
+```{r params}
+profile <- "SDEID"
+tc_path <- system.file("test_data", package = "openNCAreport")
+flag <- "FLGACCEPTKEL"
+by <- "TREATXT"
+```
+
+## Loading a test case
+
+```{r loadtc}
+tc <- load_test_case(tc_path)
+```
+
+## Assigning parameter labels
+
+```{r labels}
+tc <- tc %>% assign_wds_labels()
+```
+
+## Filter exclusions
+
+```{r excl}
+tc <- tc %>%
+      filter_wds_exclusions(flg = flag,
+                            profile = profile,
+                            by = by)
+```
+
+## Select summary paramters
+
+```{r select}
+tc <- select_wds_pars(tc,
+                      all_of(profile),
+                      all_of(by),
+                      AUCINFP,
+                      AUCLAST,
+                      AUC0..72,
+                      CMAX1,
+                      TMAX1,
+                      MRTP,
+                      THALF)
+```
+
+## Use {gtsummary} to produce exclusion and parameter summary and stack the tables for display
+
+```{r gts}
+
+Nn <- tc$exclusions %>%
+      dplyr::select(-dplyr::all_of(profile)) %>%
+      gtsummary::tbl_summary(by = dplyr::all_of(by),
+                             type = list(EXCL ~ 'continuous'),
+                             statistic = c(EXCL ~ "{length}, {little_n}"),
+                             digits = c(EXCL ~ 0),
+                             label = c(EXCL ~"N, n"))
+
+gts_tab <- tc$WDS %>%
+  gtsummary::tbl_summary(by = dplyr::all_of(by),
+                         type = list(TMAX1 ~ 'continuous',
+                                     THALF ~ 'continuous',
+                                     MRTP ~ 'continuous'),
+                         statistic = c(
+                            all_continuous() ~ "{gm_mean} ({gm_cv})",
+                            TMAX1 ~ "{median} ({lower_range}-{upper_range})",
+                            THALF ~ "{mean} &plusmn {sd}",
+                            MRTP ~ "{mean} &plusmn {sd}"
+                            )) %>%
+  gtsummary::modify_footnote(everything() ~ NA)
+
+gtsummary::tbl_stack(list(Nn, gts_tab)) %>%
+  gtsummary::as_gt() %>%
+  gt::fmt(columns = everything(), fns = function(x) x)
+```

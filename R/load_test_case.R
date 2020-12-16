@@ -244,7 +244,7 @@ get_wds <- function(tc) {
 #' @examples
 filter_wds_exclusions <- function(tc, flg, profile, by) {
   exclusions <- tc[["WDS"]][[flg]][match(tc[["WDS"]][[profile]],
-                                         names(tc[["WDS"]][[flg]]))]
+                                         tc[["WDS"]][[profile]])]
   df_excl <- data.frame(EXCL = exclusions)
 
   df_excl[[profile]] <- tc[["WDS"]][[profile]]
