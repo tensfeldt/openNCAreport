@@ -23,6 +23,8 @@ The openNCA desktop application has been developed as an electron application. *
 
 The {openNCAreport} package is designed to automate common reporting tasks across the NCA framework. As it stands, the package currently handles some of the data pre-processing required to present PK parameter data in a summary table. The tables themselves are generating using the feature-rich {gtsummary} package, but {openNCAreport} makes the task of loading and labeling the data very easy and can also handle studies which have a simple binary exclusion profile.
 
+For information and examples of {gtsummary} usage see the (homepage)[http://www.danieldsjoberg.com/gtsummary/].
+
 ### Installation and Usage
 
 The package can be installed via:
@@ -67,6 +69,7 @@ In {openNCAreport} a test-case is stored in it's own object of class `openNCA_te
 The original data sets are considered immutable during analysis, instead all transformations are applied to another data set which is called the Working Data Set (**WDS**).
 
 Should the analyst wish to access any of the data sets from a test-case they can use the accessor functions `get_xxx()` where `xxx` is `ard`, `mct`, etc.
+
 
 #### Generating parameter labels
 
