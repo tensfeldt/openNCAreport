@@ -90,7 +90,7 @@ lower_range <- function(x, na.rm = TRUE){
 #'   experimental unit from the summaries
 #'
 #' @return the value for little n, which is the number of experimental units
-#'   considered in the summaries (i.e. the total number minuse exclusions)
+#'   considered in the summaries (i.e. the total number minus exclusions)
 #' @export
 #'
 #' @examples

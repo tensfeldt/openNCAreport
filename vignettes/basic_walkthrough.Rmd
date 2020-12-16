@@ -1,5 +1,5 @@
 ---
-title: "basic_walkthrough"
+title: "openNCAreport Basic Walkthrough"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{basic_walkthrough}
@@ -54,11 +54,7 @@ tc <- tc %>%
 
 ```{r select}
 tc <- select_wds_pars(tc,
-                      all_of(profile),
                       all_of(by),
-                      AUCINFP,
-                      AUCLAST,
-                      AUC0..72,
                       CMAX1,
                       TMAX1,
                       MRTP,
@@ -83,14 +79,13 @@ gts_tab <- tc$WDS %>%
                                      THALF ~ 'continuous',
                                      MRTP ~ 'continuous'),
                          statistic = c(
-                            all_continuous() ~ "{gm_mean} ({gm_cv})",
                             TMAX1 ~ "{median} ({lower_range}-{upper_range})",
                             THALF ~ "{mean} &plusmn {sd}",
                             MRTP ~ "{mean} &plusmn {sd}"
                             )) %>%
-  gtsummary::modify_footnote(everything() ~ NA)
+  gtsummary::modify_footnote(dplyr::everything() ~ NA)
 
 gtsummary::tbl_stack(list(Nn, gts_tab)) %>%
   gtsummary::as_gt() %>%
-  gt::fmt(columns = everything(), fns = function(x) x)
+  gt::fmt(columns = dplyr::everything(), fns = function(x) x)
 ```
