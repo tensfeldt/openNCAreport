@@ -28,9 +28,9 @@ The {openNCAreport} package is designed to automate common reporting tasks acros
 The package can be installed via:
 
 ```r
-devtools::install_github("tensfeldt/openNCA@nhowlett_dev")
+devtools::install_github("tensfeldt/openNCAreport@nhowlett_dev", build_vignettes = TRUE)
 ```
-After loading the package via the usual call to `library()`.
+Afterwards the package can bee loaded via the usual call to `library(openNCAreport)`.
 
 ### Work-flow
 
@@ -48,7 +48,7 @@ The recipe below has a set of input parameters which will be unique to each anal
 
 #### Loading a test-case
 
-To start you load a NCA test-case into the R session with the `load_test_case()` function. A test-case in this context corresponds to 4 key data sets:
+To start you load a NCA test-case into the R session with `load_test_case()`. A test-case in this context corresponds to 4 key data sets:
 
 - the Analysis Ready Data set (**ARD**)
 - the Model Configuration Template (**MCT**)
@@ -72,7 +72,7 @@ The next step in processing the input data into a publishable output is to gener
 
 From the unit class of a parameter the appropriate unit can then be found in the MCT data set. With these two bits of information (label & unit) a parameter label can be produced such as: "`label` (`unit`)", e.g. "AUC (ng.hr/mL)".
 
-This whole process is handled automatically in {openNCAreport} via the `assign_wds_labels()` function.
+This whole process is handled automatically in {openNCAreport} via `assign_wds_labels()`.
 
 Under the hood, the labels are stored in the `label` attribute of the variable in the WDS, and manual adjustment of a label can be achieved via:
 
@@ -99,3 +99,5 @@ To facilitate this,  `filter_wds_exclusions()` will take a test-case, and the in
 The last step in the data pre-processing before handing over to {gtsummary} is to select the parameters you wish to summarize and display. This can be done with `select_wds_pars()` which has a very similar interface as `dplyr::select`; the first argument is the `openNCA_testcase` object and then the parameters to select (as bare symbols, i.e. no quote-marks).
 
 #### Example analysis script
+
+An example of using the {openNCAreport} workflow can be seen in the "basic_walkthrough" vignette, which can be viewed (after installing the package) with `vingette("basic_walkthrough")`.
