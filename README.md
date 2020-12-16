@@ -94,7 +94,7 @@ tc$WDS <- update_label_df(tc$WDS, par1 = "new label one", par2 = "new label two"
 
 The next step in the process is to remove any profiles from the parameters data which have been flagged for exclusion. Given an appropriate exclusion flag, which is a logical vector named by the profiles they are flagging, the filtration is straightforward. What isn't as easy is retaining the data to compute the "little n" statistic, which is number of non-excluded profiles taken into the summary. 
 
-To facilitate this,  `filter_wds_exclusions()` will take a test-case, and the input parameters, `by`, `profile`, and `flag`. The function will remove the excluded profiles in the WDS and also populate a new slow in the `openNCA_testcase` object, `exclusions`, which will be needed later to compute appropriate statistics.
+To facilitate this,  `filter_wds_exclusions()` will take a test-case, and the input parameters, `by`, `profile`, and `flag`. The function will remove the excluded profiles in the WDS and also populate a new slot in the `openNCA_testcase` object, `exclusions`, which will be needed later to compute appropriate statistics.
 
 #### Selecting parameters to summarize
 
