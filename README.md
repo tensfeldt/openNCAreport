@@ -74,8 +74,24 @@ From the unit class of a parameter the appropriate unit can then be found in the
 
 This whole process is handled automatically in {openNCAreport} via the `assign_wds_labels()` function.
 
-#### Filtering Profile Exclusions
+Under the hood, the labels are stored in the `label` attribute of the variable in the WDS, and manual adjustment of a label can be achieved via:
+
+```r
+tc$WDS$par <- update_label(tc$WDS$par, "new label")
+```
+where `tc` is the `openNCA_testcase` and `par` is the parameter name.
+
+Alternatively if there are many labels to update manually you can use `update_label_df()`:
+
+```r
+tc$WDS <- update_label_df(tc$WDS, par1 = "new label one", par2 = "new label two") 
+```
+
+
+#### Filtering profile exclusions
 
 The next step in the process is to remove any profiles from the parameters data which have been flagged for exclusion. Given an appropriate exclusion flag, which is a logical vector named by the profiles they are flagging, the filtration is straightforward. What isn't as easy is retaining the data to compute the "little n" statistic, which is number of non-excluded profiles taken into the summary. 
 
-To accomodate for this,  `filter_wds_exclusions()` will take a test-case
+To facilitate this,  `filter_wds_exclusions()` will take a test-case, and the input parameters, `by`, `profile`, and `flag`. The function will remove the excluded profiles in the WDS and also populate a new slow in the `openNCA_testcase` object, `exclusions`, which will be needed later to compute appropriate statistics.
+
+#### Selecting paramters to summarise
