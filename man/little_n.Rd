@@ -12,7 +12,7 @@ experimental unit from the summaries}
 }
 \value{
 the value for little n, which is the number of experimental units
-considered in the summaries (i.e. the total number minuse exclusions)
+considered in the summaries (i.e. the total number minus exclusions)
 }
 \description{
 Compute "Little n" for the exclusion profile
