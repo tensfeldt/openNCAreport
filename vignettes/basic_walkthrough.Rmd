@@ -22,8 +22,17 @@ library(openNCAreport)
 
 ## Set input parameters
 
+The walk-through below has a set of input parameters which will be unique to each analysis:
+
+- `profile` - the parameter name in the PK Parameter data which corresponds to an identifier of one experimental unit of analysis
+- `tc_path` - the path string to the input data
+- `flag` - the parameter name in the PK Parameter data which corresponds to summary grouping parameter
+- `by` - the parameter name in the PK Parameter data which corresponds to summary grouping parameter
+
+
 ```{r params}
 profile <- "SDEID"
+# This is an example test-case built into the package.
 tc_path <- system.file("test_data", package = "openNCAreport")
 flag <- "FLGACCEPTKEL"
 by <- "TREATXT"
@@ -32,7 +41,7 @@ by <- "TREATXT"
 ## Loading a test case
 
 Loading a test case works in one of two ways, either the user specifies a path to a
-directory containing a collection of four requisite csv data sets: 
+directory containing a collection of four requisite CSV data sets: 
 
 - The Model Configuration Template (MTC)
 - The Analysis Ready Dataset (ARD) 
@@ -63,6 +72,10 @@ Appropriate labels are deterministic given a specific analysis, and can be deriv
 The `nca_dependency_list` is available to users when the package is loaded.
 
 ```{r labels}
+# What is the unit class of TMAX? This value can be used to locate the
+# appropriate unit in the MCT
+nca_dependency_list[["TMAX"]]$unit_class
+
 tc <- tc %>% 
       assign_wds_labels()
 
@@ -91,9 +104,12 @@ tc <- tc %>%
 
 ## Select summary paramters
 
+The parameter selection interface similar to {dplyr}'s, pass the test-case in first, and then list the parameters of interest (as symbols).
+
 ```{r select}
-tc <- select_wds_pars(tc,
-                      all_of(by),
+tc <- tc %>%
+      select_wds_pars(tc,
+                      dplyr::all_of(by), # use all_of() here as this is a string
                       AUCINFP,
                       AUCLAST,
                       AUC0..72,
