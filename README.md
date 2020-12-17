@@ -107,4 +107,4 @@ The last step in the data pre-processing before handing over to {gtsummary} is t
 
 #### Example analysis script
 
-An example of using the {openNCAreport} work flow can be seen in the "basic_walkthrough" vignette, which can be viewed (after installing the package) with `vingette("basic_walkthrough")`.
+An example of using the {openNCAreport} work flow can be seen in the "basic_walkthrough" vignette, which can be viewed (after installing the package) with `vignette("basic_walkthrough")`.

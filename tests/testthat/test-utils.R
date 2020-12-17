@@ -14,5 +14,4 @@ test_that("pred_factory", {
   expect_true(out("b"))
   # check that pred works for members not in set
   expect_false(out("f"))
-
 })
