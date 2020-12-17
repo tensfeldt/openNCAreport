@@ -99,6 +99,8 @@ The next step in the process is to remove any profiles from the parameters data 
 
 To facilitate this,  `filter_wds_exclusions()` will take a test-case, and the input parameters, `by`, `profile`, and `flag`. The function will remove the excluded profiles in the WDS and also populate a new slot in the `openNCA_testcase` object, `exclusions`, which will be needed later to compute appropriate statistics.
 
+This part of the work flow is something that has plans for further development. Eventually the exclusion process will accommodate for many different types of study-design that requires partitioning the data and processing summaries on different partitions, or excluding a partition entirely.
+
 #### Selecting parameters to summarize
 
 The last step in the data pre-processing before handing over to {gtsummary} is to select the parameters you wish to summarize and display. This can be done with `select_wds_pars()` which has a very similar interface as `dplyr::select`; the first argument is the `openNCA_testcase` object and then the parameters to select (as bare symbols, i.e. no quote-marks).

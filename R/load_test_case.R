@@ -25,12 +25,13 @@ load_test_case <- function(path = NULL,
                            mct_path = NULL,
                            param_path = NULL
                            ) {
-if(is.null(path) & all(c(is.null(ard_path),is.null(flg_path),
-                         is.null(mct_path),is.null(param_path)))){
+if(!is.null(path) & any(c(!is.null(ard_path),!is.null(flg_path),
+                         !is.null(mct_path),!is.null(param_path)))){
  stop("You must supply either a single path, or individual paths to each file")
 }
 
 if(!is.null(path)){
+  if(!dir.exists(path)) stop("Path does not exist, please check again")
 
 files <- list.files(path, pattern = "(ARD|FLG|MCT|PARAM)", full.names = TRUE)
 
@@ -58,6 +59,11 @@ tc <- make_test_case(ard = ls_data[["ARD"]],
                      mct = ls_data[["MCT"]],
                      param = ls_data[["PARAM"]])
 } else {
+  if(!all(file.exists(ard_path),
+          file.exists(mct_path),
+          file.exists(flg_path),
+          file.exists(param_path))) stop("Please check your paths, files not found")
+  
   tc <- make_test_case(ard = readr::read_csv(ard_path),
                        flg = readr::read_csv(flg_path),
                        mct = readr::read_csv(mct_path),
@@ -109,6 +115,13 @@ class(test_case) <- "openNCA_testcase"
 return(test_case)
 }
 
+#' Update Object's Label Attribute
+#'
+#' @param x any object
+#' @param label the new label
+#'
+#' @return the input, \code{x}, with updated label
+#' @export
 update_label <- function(x, label){
   attr(x, which = "label") <- label
   x
@@ -257,36 +270,3 @@ tc$exclusions <- df_excl
 tc[["WDS"]] <- tc[["WDS"]][exclusions, ]
 tc
 }
-
-
-
-#TODO use match.arg to validate flag OR rethink the flag input logic
-#TODO will this need the by variable?
-compute_exclusions <- function(tc,
-                               profile = "SDEID",
-                               flg=NULL,
-                               by = NULL) {
-
-  df <- merge(x=tc[["ARD"]], y=tc[["FLG"]], by=tc$MCT[["FLGMERGE"]], all.x=TRUE)
-
-  profile_excl <- split(purrr::pluck(df, flg), purrr::pluck(df, profile)) %>%
-    purrr::imap(~all(.x == 1)) %>%
-    purrr::map_lgl(~.x)
-
-  df_excl <- tc$WDS
-  # append the value of profile_excl for each profile in the WDS
-  df_excl[["EXCL"]] <- profile_excl[match(df_excl[[profile]],
-                                          names(profile_excl))]
-  df_excl <- df_excl %>%
-    dplyr::select(profile, by, "EXCL") %>%
-    unique()
-
-  # filter out exclusions
-  tc[["WDS"]] <- tc[["WDS"]] %>%
-    dplyr::filter(!profile %in% names(profile_excl)[profile_excl])
-  # save table of exclusion correspondence to compute N, n later
-  tc$exclusions <- df_excl
-
-  tc
-}
-

@@ -20,6 +20,27 @@ test_that("load_test_case", {
                             flg_path = flg,
                             mct_path = mct,
                             param_path = param)
-
+  # check names
+  expect_named(test_tc, c("ARD", "FLG", "MCT", "PARAM", "WDS"))
+  
+  
+  # Object should be identical to the stored record
+  
+  expected <- readRDS(system.file("test_data",
+                                  "test_tc.Rds",
+                                  package = "openNCAreport"))
+  expect_equal(test_tc, expected)
+  
+  # check error behaviour
+  expect_error(test_tc <- load_test_case(path = "", # cant give path and other paths
+                                         ard_path = ard,
+                                         flg_path = flg,
+                                         mct_path = mct,
+                                         param_path = param),
+               "You must supply either a single path, or individual paths to each file")
+  
+  expect_error(test_tc <- load_test_case(path = "bad/path"),
+               "Path does not exist, please check again")
+  
 
 })
