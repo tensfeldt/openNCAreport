@@ -92,7 +92,7 @@ Filtering out exclusions is one of the simple study-design use-cases that is cur
 
 In future we aim to develop a much more sophisticated solution to this problem allowing for a partition recipe to be given, and for different analysis pathways declared for each partition.
 
-For now, `filter_wds_exclusions` will take the test-case, the name of the flag variable, and the summary-grouping variable (by)
+For now, `filter_wds_exclusions` will take the test-case, the name of the flag variable, and the summary-grouping variable (`by`).
 
 
 ```{r excl}
