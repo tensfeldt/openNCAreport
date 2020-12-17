@@ -86,7 +86,7 @@ lower_range <- function(x, na.rm = TRUE){
 
 #' Compute "Little n" for the exclusion profile
 #'
-#' @param x a \code{lgl} vector with TRUE indicating an exclusion of that
+#' @param x a \code{lgl} vector with TRUE indicating an inclusion of that
 #'   experimental unit from the summaries
 #'
 #' @return the value for little n, which is the number of experimental units

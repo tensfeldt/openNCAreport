@@ -51,6 +51,9 @@ tc <- load_test_case(tc_path)
 get_wds(tc)
 ```
 
+Alternatively, there's a more rudimentary function, `make_test_case()` which takes the separate `data.frame`s as the arguments; which may be useful in interactive use.
+
+
 ## Assigning parameter labels
 
 The next step is to assign labels for better quality output in {gtsummary}. This can be done by modifying the `label` attribute of the variables in the data. This keeps the parameter names immutable while leaving room for customization.
@@ -67,6 +70,8 @@ tc <- tc %>%
 # Check a label
 attr(tc$WDS$THALF, which = "label")
 ```
+
+Manual adjustment of a label can be achieved via:`tc$WDS$par <- update_label(tc$WDS$par, "new label")`. Where `tc` is the `openNCA_testcase` and `par` is the parameter name.
 
 ## Filter exclusions
 
@@ -99,6 +104,12 @@ tc <- select_wds_pars(tc,
 ```
 
 ## Use {gtsummary} to produce exclusion and parameter summary and stack the tables for display
+
+For now, the separate elements that make up the final output table need to be created separately and stacked together. In the future this package aims to do this automatically following a recipe the user specifies. Eventually, templates will exist to quickly (re)produce parameter summary tables that follow standard conventions.
+
+Below is an example 'recipe' to make one such table. The data are all found from slots in the test-case, and then the {gtsummary} engine is used to produce the values of interest. The {gtsummary} engine beyond the scope of this walk-through but the I encourage the interested reader to check the package website and vignettes. 
+
+The basic setup is to provide a `data.frame` of parameters to summarize, a grouping variable `by` to split the summaries (over columns, with parameters spanning rows), and then the specific functions and formatting rules for presentation. Here we compute the first table, comprising a single row, of the exclusion statistics, Big N and little n. Afterwards we compute a more complex table with multiple parameters, summary functions, and decimal places. These tables are stacked and then passed into a {gt} object, where we can force interpretation of raw HTML in the cells to render richer characters.
 
 ```{r gts}
 # First we generate a 1 row table for the Big N little n statistic using the

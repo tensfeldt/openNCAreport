@@ -180,7 +180,5 @@ get_parameter_unit <- function(x, mct) {
     purrr::map_if(~purrr::pluck(mct, .x), .p = is_opu, .else = make_blank) %>%
     # cast as character
     purrr::map_chr(as.character)
-
-
 }
 
