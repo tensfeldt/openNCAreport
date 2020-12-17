@@ -15,3 +15,6 @@ get_parameter_label(x)
 \description{
 Get Label for Parameter from NCA Dependency List
 }
+\examples{
+\dontrun{get_parameter_label("AUCINFP")}
+}

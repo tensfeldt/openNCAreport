@@ -20,3 +20,8 @@ updated with a label
 \description{
 Update the Label of a Variable in a \code{data.frame}
 }
+\examples{
+ \dontrun{update_label_df_var(iris,
+                                        "Sepal.Lenght", 
+                                        "Sepal Length (cm)")}
+}

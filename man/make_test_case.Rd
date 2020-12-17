@@ -25,3 +25,9 @@ sets; The Analysis Ready Data set (ARD), the Model Configuration Template
 data set (MCT), the Flags data set (FLG), and the parameters data set
 (PARAM). These are all stored as \code{data.frame} objects.
 }
+\examples{
+\dontrun{tc <- make_test_case(ard_path = "path/to/ard.csv",
+                                        mct_path = "path/to/mct.csv",
+                                        flg_path = "path/to/flg.csv",
+                                        param_path = "path/to/param.csv")}
+}

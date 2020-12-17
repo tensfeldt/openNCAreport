@@ -15,3 +15,6 @@ the current set (names) of parameters in the WDS
 \description{
 Get Working Data Set Parameter Names
 }
+\examples{
+\dontrun{get_wds_names(tc)}
+}

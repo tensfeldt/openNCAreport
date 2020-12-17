@@ -17,3 +17,6 @@ get_parameter_unit(x, mct)
 \description{
 Get Unit for Parameter from NCA Dependency List
 }
+\examples{
+\dontrun{get_parameter_unit("AUCINFP")}
+}

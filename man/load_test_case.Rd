@@ -29,7 +29,16 @@ a \code{openNCA_testcase} object
 }
 \description{
 The function works in one of two ways, either the user specifies a path to a
-directory containing a collection of four csv data sets with the patterns
-"ARD", "MCT", "FLG, and "PARAM" in the file names. Or the user has the
-options to include paths to each file.
+directory containing a collection of four csv data sets:
+\itemize{
+\item The Model Configuration Template (MTC)
+\item The Analysis Ready Dataset (ARD)
+\item The Flags data set (FLG)
+\item The PK Parameters data set (PARAM)
+Each identified with the patterns:  "ARD", "MCT", "FLG, and "PARAM" in the
+file names. Or the user has the options to include paths to each file.
+}
+}
+\examples{
+\dontrun{tc <- load_test_case("path/to/testcase")}
 }

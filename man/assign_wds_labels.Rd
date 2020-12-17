@@ -20,3 +20,6 @@ RegEx, these parameters are then assigned appropriate labels and units, which
 are stored in each parameter's "label" attribute - this label will be picked
 up by {gtsummary} further down the pipeline
 }
+\examples{
+\dontrun{tc <- assign_wds_labels(tc)}
+}

@@ -3,9 +3,13 @@
 #' Load NCA Test Case from Path
 #'
 #' The function works in one of two ways, either the user specifies a path to a
-#' directory containing a collection of four csv data sets with the patterns
-#' "ARD", "MCT", "FLG, and "PARAM" in the file names. Or the user has the
-#' options to include paths to each file.
+#' directory containing a collection of four csv data sets: 
+#' - The Model Configuration Template (MTC)
+#' - The Analysis Ready Dataset (ARD) 
+#' - The Flags data set (FLG) 
+#' - The PK Parameters data set (PARAM) 
+#' Each identified with the patterns:  "ARD", "MCT", "FLG, and "PARAM" in the
+#'  file names. Or the user has the options to include paths to each file.
 #'
 #' @param path directory containing the ARD, FLG, MCT, and PARAM data sets in
 #'   csv format
@@ -18,7 +22,7 @@
 #' @details
 #' @export
 #'
-#' @examples
+#' @examples \dontrun{tc <- load_test_case("path/to/testcase")}
 load_test_case <- function(path = NULL,
                            ard_path = NULL,
                            flg_path = NULL,
@@ -91,7 +95,10 @@ return(tc)
 #' @return a \code{openNCA_testcase} object
 #' @export
 #'
-#' @examples
+#' @examples \dontrun{tc <- make_test_case(ard_path = "path/to/ard.csv",
+#'                                         mct_path = "path/to/mct.csv",
+#'                                         flg_path = "path/to/flg.csv",
+#'                                         param_path = "path/to/param.csv")}
 make_test_case <- function(ard, flg, mct, param) {
 # TODO make a more general s4/r6 constructor
 
@@ -138,7 +145,9 @@ update_label <- function(x, label){
 #' @return the input \code{data.frame} \code{df} with the variable \code{var}
 #'   updated with a label
 #'
-#' @examples
+#' @examples  \dontrun{update_label_df_var(iris,
+#'                                         "Sepal.Lenght", 
+#'                                         "Sepal Length (cm)")}
 update_label_df_var <- function(df, var, label) {
     df[[var]] <- update_label(df[[var]], label)
     df

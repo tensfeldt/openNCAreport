@@ -15,3 +15,6 @@ get_parameter_unit_class(x)
 \description{
 Get Unit Class for Parameter from NCA Dependency List
 }
+\examples{
+\dontrun{get_parameter_unit_class("AUCINFP")}
+}

@@ -16,7 +16,7 @@
 #'
 #' @importFrom rlang .data
 #'
-#' @examples
+#' @examples \dontrun{tc <- assign_wds_labels(tc)}
 assign_wds_labels <- function(tc){
 
     # data("nca_dependency_list", package = "openNCAAreport")
@@ -71,7 +71,7 @@ assign_wds_labels <- function(tc){
 #' @return the current set (names) of parameters in the WDS
 #' @export
 #'
-#' @examples
+#' @examples \dontrun{get_wds_names(tc)}
 get_wds_vars <- function(tc){
  names(tc[["WDS"]])
 }
@@ -89,7 +89,7 @@ get_wds_vars <- function(tc){
 #'   the modified WDS post parameter selection.
 #' @export
 #'
-#' @examples
+#' @examples \dontrun{select_wds_pars(tc, SDEID, AUCLAST, TMAX1)}
 select_wds_pars <- function(tc, ...){
  vars <- rlang::enquos(...)
  tc[["WDS"]] <- dplyr::select(tc[["WDS"]], !!!vars)
@@ -103,7 +103,7 @@ select_wds_pars <- function(tc, ...){
 #' @return \code{chr} the parameter label
 #' @export
 #'
-#' @examples
+#' @examples \dontrun{get_parameter_label("AUCINFP")}
 get_parameter_label <- function(x){
   # data("nca_dependency_list", package = "openNCAAreport")
   is_in_dep <- pred_factory(names(nca_dependency_list))
@@ -129,7 +129,7 @@ get_parameter_label <- function(x){
 #' @return \code{chr} the parameter label
 #' @export
 #'
-#' @examples
+#' @examples \dontrun{get_parameter_unit_class("AUCINFP")}
 get_parameter_unit_class <- function(x){
 
   is_in_dep <- pred_factory(names(nca_dependency_list))
@@ -151,7 +151,7 @@ get_parameter_unit_class <- function(x){
 #' @return \code{chr} the parameter label
 #' @export
 #'
-#' @examples
+#' @examples \dontrun{get_parameter_unit("AUCINFP")}
 get_parameter_unit <- function(x, mct) {
   # TODO currently the logic around pasting/substituting "OUTPUTUNIT$" is
   # convoluted and could be simplified

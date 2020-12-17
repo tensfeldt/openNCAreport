@@ -20,3 +20,6 @@ the modified WDS post parameter selection.
 From the working data set, take these parameters for display in summary
 tables
 }
+\examples{
+\dontrun{select_wds_pars(tc, SDEID, AUCLAST, TMAX1)}
+}

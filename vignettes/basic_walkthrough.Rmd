@@ -31,18 +31,51 @@ by <- "TREATXT"
 
 ## Loading a test case
 
+Loading a test case works in one of two ways, either the user specifies a path to a
+directory containing a collection of four requisite csv data sets: 
+
+- The Model Configuration Template (MTC)
+- The Analysis Ready Dataset (ARD) 
+- The Flags data set (FLG) 
+- The PK Parameters data set (PARAM) 
+
+Each identified with the patterns:  "ARD", "MCT", "FLG, and "PARAM" in the
+file names. Or the user has the options to include paths to each file. In this 
+case we are using the built-in example data.
+
 ```{r loadtc}
-# TODO add more detail around tc class
+
 tc <- load_test_case(tc_path)
+
+# Get the WDS
+get_wds(tc)
 ```
 
 ## Assigning parameter labels
 
+The next step is to assign labels for better quality output in {gtsummary}. This can be done by modifying the `label` attribute of the variables in the data. This keeps the parameter names immutable while leaving room for customization.
+
+Appropriate labels are deterministic given a specific analysis, and can be derived from the MCT with help from a data-structure called `nca_dependency_list`, which stores the parameter-label-unit_class correspondence. Using `assign_wds_labels()` on the test case object will automatically assign the appropriate labels from the MCT and `nca_dependency_list`.
+
+The `nca_dependency_list` is available to users when the package is loaded.
+
 ```{r labels}
-tc <- tc %>% assign_wds_labels()
+tc <- tc %>% 
+      assign_wds_labels()
+
+
+# Check a label
+attr(tc$WDS$THALF, which = "label")
 ```
 
 ## Filter exclusions
+
+Filtering out exclusions is one of the simple study-design use-cases that is currently implemented. Certain analysis profiles are dropped for the parameter summarization for any number of reasons. These records are kept but flagged for exclusion in a logical variable (same extent as the WDS).
+
+In future we aim to develop a much more sophisticated solution to this problem allowing for a partition recipe to be given, and for different analysis pathways declared for each partition.
+
+For now, `filter_wds_exclusions` will take the test-case, the name of the flag variable, and the summary-grouping variable (by)
+
 
 ```{r excl}
 tc <- tc %>%
@@ -68,6 +101,8 @@ tc <- select_wds_pars(tc,
 ## Use {gtsummary} to produce exclusion and parameter summary and stack the tables for display
 
 ```{r gts}
+# First we generate a 1 row table for the Big N little n statistic using the
+# exclusions data in the test case
 
 Nn <- tc$exclusions %>%
       dplyr::select(-dplyr::all_of(profile)) %>%
@@ -75,23 +110,30 @@ Nn <- tc$exclusions %>%
                              type = list(EXCL ~ 'continuous'),
                              statistic = c(EXCL ~ "{length}, {little_n}"),
                              digits = c(EXCL ~ 0),
-                             label = c(EXCL ~"N, n"))
+                             label = c(EXCL ~"N, n")) %>%
+      # remove auto-generated footnote
+      gtsummary::modify_footnote(dplyr::everything() ~ NA)
 
+# Next we use the {gtsummary} engine to produce the summaries we want on each
+# parameter
 gts_tab <- tc$WDS %>%
-  gtsummary::tbl_summary(by = dplyr::all_of(by),
-                         digits = list(TMAX1 ~ c(2, 1, 1),
-                                       THALF ~ c(2, 1),
-                                       MRTP ~ c(2, 1)),
-                         statistic = c(
-                            AUCINFP ~ "{gm_mean} ({gm_cv})",
-                            AUCLAST ~ "{gm_mean} ({gm_cv})",
-                            AUC0..72 ~ "{gm_mean} ({gm_cv})",
-                            CMAX1 ~ "{gm_mean} ({gm_cv})",
-                            TMAX1 ~ "{median} ({lower_range}-{upper_range})",
-                            THALF ~ "{mean} &plusmn {sd}",
-                            MRTP ~ "{mean} &plusmn {sd}"
-                            )) %>%
-  gtsummary::modify_footnote(dplyr::everything() ~ NA)
+           gtsummary::tbl_summary(by = dplyr::all_of(by),
+                                  digits = list(TMAX1 ~ c(2, 1, 1), # number of 
+                                                THALF ~ c(2, 1),    # dig per 
+                                                MRTP ~ c(2, 1)),    # stat 
+                                  statistic = c(
+                                     # param name ~ "{stat}" etc
+                                     AUCINFP ~ "{gm_mean} ({gm_cv})",
+                                     AUCLAST ~ "{gm_mean} ({gm_cv})",
+                                     AUC0..72 ~ "{gm_mean} ({gm_cv})",
+                                     CMAX1 ~ "{gm_mean} ({gm_cv})",
+                                     TMAX1 ~
+                                       "{median} ({lower_range}-{upper_range})",
+                                     THALF ~ "{mean} &plusmn {sd}",
+                                     MRTP ~ "{mean} &plusmn {sd}"
+                                     )) %>%
+           # remove auto-generated footnote
+           gtsummary::modify_footnote(dplyr::everything() ~ NA)
 
 gtsummary::tbl_stack(list(Nn, gts_tab)) %>%
   gtsummary::as_gt() %>%
