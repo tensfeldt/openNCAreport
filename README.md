@@ -108,3 +108,11 @@ The last step in the data pre-processing before handing over to {gtsummary} is t
 #### Example analysis script
 
 An example of using the {openNCAreport} work flow can be seen in the "basic_walkthrough" vignette, which can be viewed (after installing the package) with `vignette("basic_walkthrough")`.
+
+## Further Work
+
+- More data validation
+- Flesh out the object constructor for test-case
+- Rework and redesign exclusion/partition code to cope with more advance study-designs; including the ability to flag different partitions for exclusion or more complex table designs
+  - Additional to the above is to design a 'table-constructor' which can automatically product and stack the partitions
+

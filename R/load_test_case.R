@@ -62,8 +62,10 @@ tc <- make_test_case(ard = ls_data[["ARD"]],
   if(!all(file.exists(ard_path),
           file.exists(mct_path),
           file.exists(flg_path),
-          file.exists(param_path))) stop("Please check your paths, files not found")
-  
+          file.exists(param_path))) {
+    stop("Please check your paths, files not found")
+  }
+
   tc <- make_test_case(ard = readr::read_csv(ard_path),
                        flg = readr::read_csv(flg_path),
                        mct = readr::read_csv(mct_path),
@@ -256,8 +258,8 @@ get_wds <- function(tc) {
 #'
 #' @examples
 filter_wds_exclusions <- function(tc, flg, profile, by) {
-  exclusions <- as.logical(tc[["WDS"]][[flg]]) 
-  
+  exclusions <- as.logical(tc[["WDS"]][[flg]])
+
   exclusions <- exclusions[match(tc[["WDS"]][[profile]],
                                          tc[["WDS"]][[profile]])]
   df_excl <- data.frame(EXCL = exclusions)
