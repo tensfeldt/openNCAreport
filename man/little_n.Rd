@@ -7,7 +7,7 @@
 little_n(x)
 }
 \arguments{
-\item{x}{a \code{lgl} vector with TRUE indicating an exclusion of that
+\item{x}{a \code{lgl} vector with TRUE indicating an inclusion of that
 experimental unit from the summaries}
 }
 \value{

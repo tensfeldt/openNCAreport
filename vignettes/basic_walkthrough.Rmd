@@ -69,12 +69,12 @@ The next step is to assign labels for better quality output in {gtsummary}. This
 
 Appropriate labels are deterministic given a specific analysis, and can be derived from the MCT with help from a data-structure called `nca_dependency_list`, which stores the parameter-label-unit_class correspondence. Using `assign_wds_labels()` on the test case object will automatically assign the appropriate labels from the MCT and `nca_dependency_list`.
 
-The `nca_dependency_list` is available to users when the package is loaded.
+<!-- The `nca_dependency_list` is available to users when the package is loaded. -->
 
 ```{r labels}
-# What is the unit class of TMAX? This value can be used to locate the
-# appropriate unit in the MCT
-nca_dependency_list[["TMAX"]]$unit_class
+# # What is the unit class of TMAX? This value can be used to locate the
+# # appropriate unit in the MCT
+# nca_dependency_list[["TMAX"]]$unit_class
 
 tc <- tc %>% 
       assign_wds_labels()
@@ -108,8 +108,7 @@ The parameter selection interface similar to {dplyr}'s, pass the test-case in fi
 
 ```{r select}
 tc <- tc %>%
-      select_wds_pars(tc,
-                      dplyr::all_of(by), # use all_of() here as this is a string
+      select_wds_pars(dplyr::all_of(by), # use all_of() here as this is a string
                       AUCINFP,
                       AUCLAST,
                       AUC0..72,
