@@ -111,8 +111,6 @@ This part of the work flow is something that has plans for further development. 
 The last step in the data pre-processing before handing over to {gtsummary} is to select the parameters you wish to summarize and display. This can be done with `select_wds_pars()` which has a very similar interface as `dplyr::select`; the first argument is the `openNCA_testcase` object and then the parameters to select (as bare symbols, i.e. no quote-marks).
 
 
-
-
 ### Further Work
 
 - Rework and redesign exclusion/partition code to cope with more advanced study-designs; including the ability to flag different partitions for exclusion or more complex table designs.
