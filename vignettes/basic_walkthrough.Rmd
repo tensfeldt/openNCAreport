@@ -69,12 +69,35 @@ The next step is to assign labels for better quality output in {gtsummary}. This
 
 Appropriate labels are deterministic given a specific analysis, and can be derived from the MCT with help from a data-structure called `nca_dependency_list`, which stores the parameter-label-unit_class correspondence. Using `assign_wds_labels()` on the test case object will automatically assign the appropriate labels from the MCT and `nca_dependency_list`.
 
-<!-- The `nca_dependency_list` is available to users when the package is loaded. -->
+The `nca_dependency_list` is a list with 204 slots, one per parameter, each slot has a further 8 nested slots
+
+- parameter label - The paramter label for presentation
+- cdisc_label - 
+- regex - A RegEx pattern that links vars in the parameter data to their slot here
+- valid_models - 
+- display_list_models - 
+- predecessors - 
+
+The `nca_dependency_list` is not explicitly exported from the package, but is available to users with `openNCAreport:::nca_dependency_list`, and the code used to generate the list is built into the package and can be found at:
+
+```{r, eval=FALSE}
+dir <-system.file("ext_code", "nca_depedency_list.R", package = "openNCAreport")
+file.edit(dir)
+```
+
+For more advanced users, you may use the code above to make updates to the dependency list, and then it's possible to build the new version back into the pacakge via:
+
+```{r, eval = FALSE}
+# object must have the name "nca_dependency_list", and be set to internal and
+# overwrite
+usethis::use_data(nca_dependency_list, internal = TRUE, overwrite = TRUE)
+
+```
 
 ```{r labels}
-# # What is the unit class of TMAX? This value can be used to locate the
-# # appropriate unit in the MCT
-# nca_dependency_list[["TMAX"]]$unit_class
+# What is the unit class of TMAX? This value can be used to locate the
+# appropriate unit in the MCT
+openNCAreport:::nca_dependency_list[["TMAX"]]$unit_class
 
 tc <- tc %>% 
       assign_wds_labels()
