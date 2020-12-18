@@ -34,6 +34,11 @@ devtools::install_github("tensfeldt/openNCAreport@nhowlett_dev", build_vignettes
 ```
 Afterwards the package can bee loaded via the usual call to `library(openNCAreport)`.
 
+#### Example analysis script
+
+An more practical example of using the {openNCAreport} work-flow can be seen in the "basic_walkthrough" vignette, which can be viewed (after installing the package) with `vingette("basic_walkthrough")`.
+
+
 ### Work-flow
 
 At this stage in development, the work-flow in {openNCAreport} is quite rigid, with plans to add flexibility in the future. Here we outline the standard work-flow.
@@ -105,9 +110,6 @@ This part of the work flow is something that has plans for further development. 
 
 The last step in the data pre-processing before handing over to {gtsummary} is to select the parameters you wish to summarize and display. This can be done with `select_wds_pars()` which has a very similar interface as `dplyr::select`; the first argument is the `openNCA_testcase` object and then the parameters to select (as bare symbols, i.e. no quote-marks).
 
-#### Example analysis script
-
-An example of using the {openNCAreport} work flow can be seen in the "basic_walkthrough" vignette, which can be viewed (after installing the package) with `vingette("basic_walkthrough")`.
 
 
 
