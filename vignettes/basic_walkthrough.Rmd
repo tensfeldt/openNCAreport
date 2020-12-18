@@ -71,12 +71,17 @@ Appropriate labels are deterministic given a specific analysis, and can be deriv
 
 The `nca_dependency_list` is a list with 204 slots, one per parameter, each slot has a further 8 nested slots
 
-- parameter label - The paramter label for presentation
-- cdisc_label - 
-- regex - A RegEx pattern that links vars in the parameter data to their slot here
-- valid_models - 
-- display_list_models - 
-- predecessors - 
+
+
+- `parameter_label` - represents the parameter name label used to report parameters with PDS codelist. If missing, there's not a corresponding parameter and parameter name may represent a "placeholder" parameter.
+- `cdisc_label` - represents the cdisc parameter name label used to report the parameters with CDISC codelist. If missing, there's not a corresponding parameter and parameter name may represent a "placeholder" parameter.
+- `callfun` - represents the function that will be used to generate the parameters
+- `regex` - regular expression that is used to identify the parameter
+- `unit_class` - unit class that the parameter belongs to and is used for unit conversion
+- `valid_models` - represents which model/dosing type the parameter belongs to for computation
+- `display_list_models` - represents which model/dosing type the parameter will be displayed as an output for
+- `predecessors` - list of parameters that the specified parameters belong to
+
 
 The `nca_dependency_list` is not explicitly exported from the package, but is available to users with `openNCAreport:::nca_dependency_list`, and the code used to generate the list is built into the package and can be found at:
 
@@ -85,7 +90,7 @@ dir <-system.file("ext_code", "nca_depedency_list.R", package = "openNCAreport")
 file.edit(dir)
 ```
 
-For more advanced users, you may use the code above to make updates to the dependency list, and then it's possible to build the new version back into the pacakge via:
+For more advanced users, you may use the code above to make updates to the dependency list, and then it's possible to build the new version back into the package via:
 
 ```{r, eval = FALSE}
 # object must have the name "nca_dependency_list", and be set to internal and
@@ -125,7 +130,7 @@ tc <- tc %>%
                             by = by)
 ```
 
-## Select summary paramters
+## Select summary parameters
 
 The parameter selection interface similar to {dplyr}'s, pass the test-case in first, and then list the parameters of interest (as symbols).
 

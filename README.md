@@ -113,4 +113,9 @@ An example of using the {openNCAreport} work flow can be seen in the "basic_walk
 
 ### Further Work
 
-
+- Rework and redesign exclusion/partition code to cope with more advanced study-designs; including the ability to flag different partitions for exclusion or more complex table designs.
+  - Addition to the above is to design a 'table-constructor' which can automatically produce and assemble more complex table designs.
+- Further the implementation of the test-case object constructor, and convert/produce the functions in methods, including defaults like `print`, `summary`, etc.
+- Add routines for input data validation.
+- Improve/add `parameter_label` slot to `nca_dependency_list` to store HTML for better quality labels
+- Add `parameter_summary`, and `parameter_format` slot to `nca_dependency_list` to store the conventional summary for that parameter and formatting details such as significant figures. Along with this, a method to retrieve, compute, and format each summary.
